@@ -1,0 +1,16 @@
+.App{
+    width: 500px;
+    height: auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#form-login,
+#form-register {
+    display: inline-block;
+}
+input,label {
+    padding: 5px;
+    display: block;
+}

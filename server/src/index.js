@@ -1,12 +1,20 @@
 const express = require('express');
+const path = require('path');
 const morgan = require('morgan');
 const cors = require('cors');
 const mysql = require('mysql');
+const { engine } = require('express-handlebars');
 
 const app = express();
+const port = 3001;
+
 app.use(express.json());
 app.use(cors());
-const port = 3001;
+app.use(morgan('combined'))
+app.engine('hbs', engine());
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'resources/views'));
+
 
 const db = mysql.createConnection({
   user: 'root',
@@ -15,7 +23,6 @@ const db = mysql.createConnection({
   database: 'login-register'
 });
 
-app.use(morgan('combined'))
 
 app.post('/register', (req, res) => {
 

@@ -1,5 +1,5 @@
 import Sidebar from "../../components/admin/sidebar/Sidebar";
-import Navbar from "../../components/admin/navbar/Narbar";
+import Navbar from "../../components/admin/navbar/Navbar";
 import "./adminlayout.scss";
 
 const AdminLayout = () => {

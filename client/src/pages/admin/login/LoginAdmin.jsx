@@ -1,7 +1,7 @@
 import React from 'react';
 import './login.scss';
 
-const Login = () => {
+const LoginAdmin = () => {
     return (
         <div>
             <h1>Login page</h1>
@@ -9,4 +9,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default LoginAdmin;

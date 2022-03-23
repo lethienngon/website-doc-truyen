@@ -1,9 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import Login from './components/login.jsx';
-// import Register from './components/register.jsx';
+import SignPage from './pages/SignPage/SignPage';
 import Home from "./pages/HomePage/Home";
 import AdminLayout from "./layouts/admin/AdminLayout";
-import { List, Login, New, Single } from "./pages/admin/index";
+import { List, New, Single } from "./pages/admin/index";
 import "./App.css";
 
 function App() {
@@ -13,10 +12,11 @@ function App() {
         <Routes>
           <Route path="/">
               <Route index element={<Home />}></Route>
+              <Route path="signpage" element={<SignPage />}></Route>
           </Route>
           <Route path="admin">
             <Route index element={<AdminLayout />}></Route>
-            <Route path="login" element={<Login />}></Route>
+            {/* <Route path="login" element={<Login />}></Route> */}
             <Route path="users">
               <Route index element={<List />}></Route>
               <Route path=":userID" element={<Single />}></Route>

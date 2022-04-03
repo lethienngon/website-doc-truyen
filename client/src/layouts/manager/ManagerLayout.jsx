@@ -5,33 +5,27 @@ import Navbar from "../../components/navbar/Navbar";
 
 // Role
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
-import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import SupervisedUserCircleOutlinedIcon from '@mui/icons-material/SupervisedUserCircleOutlined';
 
 // Menu
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
-import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
+import BrushOutlinedIcon from '@mui/icons-material/BrushOutlined';
+import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 
-import "./adminlayout.scss";
+import "./managerlayout.scss";
 
-const AdminLayout = () => {
+const ManagerLayout = () => {
     return (
-        <div className="admin">
+        <div className="manager">
             <Sidebar
-                logo="Admin"
+                logo="Manager"
                 roleList={[
                     {
                         id: 1,
                         icon: <AdminPanelSettingsOutlinedIcon className="icon" />,
                         name: "Admin",
                         link: "/admin"
-                    },
-                    {
-                        id: 2,
-                        icon: <ManageAccountsOutlinedIcon className="icon" />,
-                        name: "Manager",
-                        link: "/manager"
                     },
                     {
                         id: 3,
@@ -50,19 +44,25 @@ const AdminLayout = () => {
                 menuList={[
                     {
                         id: 1,
-                        icon: <PersonOutlineOutlinedIcon className="icon" />,
-                        name: "User",
-                        link: "user"
+                        icon: <BrushOutlinedIcon className="icon" />,
+                        name: "Author",
+                        link: "author"
                     },
                     {
                         id: 2,
-                        icon: <CommentOutlinedIcon className="icon" />,
-                        name: "Comment",
-                        link: "comment"
+                        icon: <CategoryOutlinedIcon className="icon" />,
+                        name: "Category",
+                        link: "category"
+                    },
+                    {
+                        id: 3,
+                        icon: <MenuBookOutlinedIcon className="icon" />,
+                        name: "Story",
+                        link: "story"
                     }
                 ]}
             />
-            <div className="adminContainer">
+            <div className="managerContainer">
                 <Navbar />
                 <Outlet />
             </div>
@@ -70,4 +70,4 @@ const AdminLayout = () => {
     )
 }
 
-export default AdminLayout;
+export default ManagerLayout;

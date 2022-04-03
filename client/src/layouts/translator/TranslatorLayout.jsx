@@ -6,20 +6,20 @@ import Navbar from "../../components/navbar/Navbar";
 // Role
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
-import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import SupervisedUserCircleOutlinedIcon from '@mui/icons-material/SupervisedUserCircleOutlined';
 
 // Menu
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
-import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
+import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
+import GridOnOutlinedIcon from '@mui/icons-material/GridOnOutlined';
+import GTranslateOutlinedIcon from '@mui/icons-material/GTranslateOutlined';
 
-import "./adminlayout.scss";
+import "./translatorlayout.scss";
 
-const AdminLayout = () => {
+const TranslatorLayout = () => {
     return (
-        <div className="admin">
+        <div className="translator">
             <Sidebar
-                logo="Admin"
+                logo="Translator"
                 roleList={[
                     {
                         id: 1,
@@ -34,12 +34,6 @@ const AdminLayout = () => {
                         link: "/manager"
                     },
                     {
-                        id: 3,
-                        icon: <AccountBoxOutlinedIcon className="icon" />,
-                        name: "Translator",
-                        link: "/translator"
-                    },
-                    {
                         id: 4,
                         icon: <SupervisedUserCircleOutlinedIcon className="icon" />,
                         name: "Member",
@@ -50,19 +44,25 @@ const AdminLayout = () => {
                 menuList={[
                     {
                         id: 1,
-                        icon: <PersonOutlineOutlinedIcon className="icon" />,
-                        name: "User",
-                        link: "user"
+                        icon: <GridViewOutlinedIcon className="icon" />,
+                        name: "Chapter",
+                        link: "chapter"
                     },
                     {
                         id: 2,
-                        icon: <CommentOutlinedIcon className="icon" />,
-                        name: "Comment",
-                        link: "comment"
+                        icon: <GridOnOutlinedIcon className="icon" />,
+                        name: "Content",
+                        link: "content"
+                    },
+                    {
+                        id: 3,
+                        icon: <GTranslateOutlinedIcon className="icon" />,
+                        name: "Translation",
+                        link: "translation"
                     }
                 ]}
             />
-            <div className="adminContainer">
+            <div className="translatorContainer">
                 <Navbar />
                 <Outlet />
             </div>
@@ -70,4 +70,4 @@ const AdminLayout = () => {
     )
 }
 
-export default AdminLayout;
+export default TranslatorLayout;

@@ -13,6 +13,7 @@ function SignPage(){
     const [passwordReg, setPasswordReg] = useState("");
     const [rePasswordReg, setRePasswordReg] = useState("");
     const [emailReg, setEmailReg] = useState("");
+    const [nameReg, setNameReg] = useState("");
 
     const [changeForm, setChangeForm] = useState("signpage");
 
@@ -115,6 +116,16 @@ function SignPage(){
                             name="register-re-password" 
                             placeholder="Xác nhận lại mật khẩu"
                             onChange={(e) => setRePasswordReg(e.target.value)}
+                    />
+                    </label>
+                    <label htmlFor="register-name">
+                        <span>Name</span>
+                        <input 
+                            type="text" 
+                            id="register-name" 
+                            name="register-name" 
+                            placeholder="Vui lòng nhập tên"
+                            onChange={(e) => setNameReg(e.target.value)}
                     />
                     </label>
                     <label htmlFor="register-email">

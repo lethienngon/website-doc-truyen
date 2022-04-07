@@ -10,6 +10,9 @@ app.use(cors());
 // Setup router
 app.use('/api/v1', require('./app/routes/index'));
 
+// Static Image Folder
+app.use('/images', express.static('./images'))
+
 // Catch 404 and froward to error handler
 app.use(function(req, res, next) {
     next(createError(404));

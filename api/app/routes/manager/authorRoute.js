@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const controllerAuthor = require('../../controllers/manager/author')
+const authorController = require('../../controllers/manager/authorController')
 
-router.get('/', (req, res, next) => {
-    res.send("Get all author")
-})
+// findAll or find by name
+router.get('/', authorController.findAll);
 
 router.get('/:authorID', (req, res, next) => {
     res.send("Get one author with ID = " + req.params.authorID)
 })
 
-router.post('/add', controllerAuthor.addAuthor);
+// Add Author
+router.post('/add', authorController.upload, authorController.addAuthor);
 
 router.put('/edit/:authorID', (req, res, next) => {
     res.send("Edit author with ID = " + req.params.authorID)

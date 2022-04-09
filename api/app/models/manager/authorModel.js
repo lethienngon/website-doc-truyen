@@ -9,11 +9,11 @@ const Author = function(author) {
 Author.add = (newAuthor, result) => {
     db.query("INSERT INTO author SET ?", newAuthor, (err, res) => {
         if (err) {
-            console.log("error: ", err);
+            // console.log("error: ", err);
             result(err, null);
             return;
         }
-        console.log("created author: ", { id: res.insertId, ...newAuthor });
+        // console.log("created author: ", { id: res.insertId, ...newAuthor });
         result(null, { id: res.insertId, ...newAuthor });
     });
 };

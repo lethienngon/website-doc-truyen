@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext, useRef } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { TextField, Avatar, Button } from '@mui/material';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
@@ -9,11 +11,67 @@ import Axios from 'axios';
 
 import "./author.scss";
 
+// create object context
+export const SearchInputContext = createContext();
+
 const AuthorAdd = () => {
 
   const [ nameAdd, setNameAdd ] = useState("");
   const [ descriptionAdd, setDescriptionAdd ] = useState("");
-  const [ selectedImage, setSelectedImage] = useState();
+  const [ selectedImage, setSelectedImage ] = useState("");
+  const [ alertNameAdd, setAlertNameAdd ] = useState("");
+  const [ alertSelectedImage, setAlertSelectedImage ] = useState("");
+  // we set it to true so that the form is disabled on first render
+  const [disable, setDisabled] = useState(true)
+
+  // use object context
+  const { getAllAuthor, listRow, setShow, setResStateValue, setShowAlert } = useContext(SearchInputContext);
+
+  // we use the help of useRef to test if it's the first render
+  const firstRender = useRef(true);
+
+  useEffect(()=>{
+    // we want to skip validation on first render
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+
+    // here we can disable/enable the save button by wrapping the setState function
+    // in a call to the validation function which returns true/false
+    setDisabled(() => {
+      // get all author_name push into array author_name
+      const author_name = [];
+      listRow.map(row => (
+      author_name.push(row.author_name)
+      ))
+      if(nameAdd == "" && selectedImage == ""){
+        setAlertNameAdd("Tên tác giả không được trống!!!");
+        setAlertSelectedImage("Avatar không được để trống!!!");
+        return true;
+      }
+      else if(nameAdd == "" && selectedImage != ""){
+        setAlertNameAdd("Tên tác giả không được trống!!!");
+        setAlertSelectedImage("");
+        return true;
+      }
+      if(nameAdd != "" && selectedImage == ""){
+        setAlertNameAdd("");
+        setAlertSelectedImage("Avatar không được để trống!!!");
+        return true;
+      }
+      else if(author_name.find(name => name == nameAdd)){
+        setAlertNameAdd("Tên tác giả đã tồn tại!!!");
+        return true;
+      }
+      else{
+        setAlertNameAdd("");
+        setAlertSelectedImage("");
+        return false;
+      }
+      })
+  }, [ nameAdd, selectedImage ])
+
 
   const handleSubmit = () => {
 
@@ -22,18 +80,22 @@ const AuthorAdd = () => {
     formData.append('description', descriptionAdd)
     formData.append('image', selectedImage)
 
-    const response = Axios({
+    Axios({
       method: "post",
       url: "http://localhost:3001/api/v1/manager/authors/add",
       data: formData,
       headers: { "Content-Type": "multipart/form-data" },
-    });
-    // console.log(selectedImage)
-    console.log(response);
+    }).then(res => {
+      setResStateValue(res.data.state);
+      console.log(res.data)
+    })
+    .catch(setResStateValue(0));
 
-    setNameAdd("");
-    setDescriptionAdd("");
-    setSelectedImage();
+    getAllAuthor();
+    setShow(false);
+
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false),2000);
   }
 
   const imageChange = (e) => {
@@ -43,7 +105,7 @@ const AuthorAdd = () => {
   };
 
   const removeSelectedImage = () => {
-    setSelectedImage();
+    setSelectedImage("");
   };
 
   return (
@@ -59,7 +121,7 @@ const AuthorAdd = () => {
             onChange={imageChange}
           />
         </label>
-
+        <p>{alertSelectedImage}</p>
         {selectedImage && (
           <div>
             <Avatar 
@@ -79,6 +141,7 @@ const AuthorAdd = () => {
           type="text"
           onChange={(e) => setNameAdd(e.target.value)}
         />
+        <p>{alertNameAdd}</p>
         <TextareaAutosize
           value={descriptionAdd}
           minRows={6}
@@ -93,7 +156,13 @@ const AuthorAdd = () => {
                 }}
           onChange={(e) => setDescriptionAdd(e.target.value)}
         />
-        <Button variant="contained" onClick={handleSubmit}>Save</Button>
+        <Button 
+          variant="contained" 
+          onClick={handleSubmit} 
+          disabled={disable}
+        >
+          Save
+        </Button>
       </div>
     </div>
   )
@@ -102,9 +171,20 @@ const AuthorAdd = () => {
 const Author = () => {
 
   const [ show, setShow ] = useState(false);
-  const [ colorAddButton, setColorAddButton] = useState(true);
   const [ searchInput, setSearchInput ] = useState("");
   const [ listRow, setListRow ] = useState([]);
+  const [ showAlert, setShowAlert ] = useState(false);
+  const [ resStateValue, setResStateValue ] = useState(-1);
+  const resState = [
+    {
+      state: 'error',
+      alert: "Có lỗi xảy ra!!!"
+    },
+    { 
+      state: 'success',
+      alert: "Thêm Tác giả thành công"
+    }
+  ];
 
   const columns = [
     { field: 'author_id', headerName: 'ID', width: 100 },
@@ -135,25 +215,29 @@ const Author = () => {
     },
   ];
 
+  const getAllAuthor = async () => {
+    try {
+      const response = await Axios.get(`http://localhost:3001/api/v1/manager/authors?name=${searchInput}`);
+        setListRow(response.data);
+    } catch (error) {
+        console.log(error.message)
+    }
+  }
+
   useEffect(() => {
-    ;(async () => {
-        try {
-            const response = await Axios.get(`http://localhost:3001/api/v1/manager/authors?name=${searchInput}`);
-            setListRow(response.data);
-        } catch (error) {
-            console.log(error.message)
-        }
-    })()
+    getAllAuthor();
   }, [searchInput])
 
-
     return (
+      <SearchInputContext.Provider value={{ getAllAuthor, listRow, setShow, setResStateValue, setShowAlert }}>
         <div className='authorContainer'>
           <div className='authorHeader'>
             <div className="search">
               <input 
                 type="text" 
                 placeholder="Search..."
+                value={searchInput}
+                disabled={show && 'disable'}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
               <SearchOutlinedIcon />
@@ -161,16 +245,16 @@ const Author = () => {
             <div 
               className='addButton'
               style={{
-                color: colorAddButton ? "darkgreen" : "white",
-                backgroundColor: colorAddButton ? "white" : "darkgreen"
+                color: show ? "white" : "darkgreen",
+                backgroundColor: show ? "darkgreen" : "white"
               }}
-              onClick={(e) => {
-                setShow(!show);
-                setColorAddButton(!colorAddButton);
-              }}
+              onClick={(e) => {setSearchInput(""); setShow(!show)}}
             >
               Add Author</div>
           </div>
+          <Stack sx={{ width: '100%' }} spacing={2}>
+            { showAlert && <Alert severity={resState[resStateValue].state}>{resState[resStateValue].alert}</Alert> }
+          </Stack>
           {show && <AuthorAdd />}
           <div className='authorList'>
             <DataGrid
@@ -184,6 +268,7 @@ const Author = () => {
             />
           </div>
         </div>
+      </SearchInputContext.Provider>
     );
 };
 

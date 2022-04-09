@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
 })
 
 // Upload Image
-const upload = multer({
+const uploadImage = multer({
     storage: storage,
     limits: { fileSize: '1000000' },
     fileFilter: (req, file, cb) => {
@@ -30,25 +30,25 @@ const upload = multer({
 
 
 const addAuthor = (req, res) => {
-    // Validate request
-    if (!req.body) {
-        res.status(400).send({
-            message: "Content can not be empty!"
-        });
-    }
     // Create a Author
     const author = new Author({
         name: req.body.name,
         description: req.body.description,
         image: req.file.path,
     });
+    // console.log(author.image);
     // Save Author in the database
-    Author.add(author, (err, data) => {
+    Author.add(author, (err) => {
         if (err)
-            res.status(500).send({
-                message: err.message || "Some error occurred while creating the Author."
-            });
-        else res.send(data);
+            res.send(JSON.stringify({
+                state: 0,
+                notice: "Add author failed!!!"
+            }));
+        else res.send(JSON.stringify({
+            state: 1,
+            notice: "Add author success!!!"
+        }));
+
     });
 }
 
@@ -65,6 +65,6 @@ const findAll = (req, res) => {
 
 module.exports = {
     addAuthor,
-    upload,
+    uploadImage,
     findAll
 }

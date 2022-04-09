@@ -10,7 +10,7 @@ router.get('/:authorID', (req, res, next) => {
 })
 
 // Add Author
-router.post('/add', authorController.upload, authorController.addAuthor);
+router.post('/add', authorController.uploadImage, authorController.addAuthor);
 
 router.put('/edit/:authorID', (req, res, next) => {
     res.send("Edit author with ID = " + req.params.authorID)

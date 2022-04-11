@@ -8,6 +8,11 @@ import TextareaAutosize from '@mui/base/TextareaAutosize';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import HideImageIcon from '@mui/icons-material/HideImage';
 import Axios from 'axios';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import "./author.scss";
 
@@ -173,6 +178,10 @@ const Author = () => {
   const [ show, setShow ] = useState(false);
   const [ searchInput, setSearchInput ] = useState("");
   const [ listRow, setListRow ] = useState([]);
+  
+  const [ seletedID, setSelectedID ] = useState();
+
+  // Alert add author
   const [ showAlert, setShowAlert ] = useState(false);
   const [ resStateValue, setResStateValue ] = useState(-1);
   const resState = [
@@ -182,10 +191,34 @@ const Author = () => {
     },
     { 
       state: 'success',
-      alert: "Thêm Tác giả thành công"
+      alert: "Thêm tác giả thành công"
+    },
+    { 
+      state: 'success',
+      alert: "Xóa tác giả thành công"
     }
   ];
 
+  // Delete author
+  const [ openDialogDelete, setOpenDialogDelete ] = useState(false);
+  const [ showAlertDelete, setShowAlertDelete ] = useState(false);
+  const [ resStateDeleteValue, setResStateDeleteValue ] = useState(-1);
+  const resStateDelete = [
+    {
+      state: 'error',
+      alert: "Có lỗi xảy ra!!!"
+    },
+    { 
+      state: 'success',
+      alert: "Xóa tác giả thành công"
+    },
+    { 
+      state: 'warning',
+      alert: "Tác giả có id = " + seletedID + " không tồn tại"
+    }
+  ];
+
+  // Columns DataGrid
   const columns = [
     { field: 'author_id', headerName: 'ID', width: 100 },
     { field: 'author_name', headerName: 'Name', width: 300 },
@@ -204,16 +237,38 @@ const Author = () => {
       field: 'action',
       headerName: 'Action',
       width: 100,
-      renderCell: () => {
+      renderCell: (params) => {
+
         return (
           <div className='action'>
             <div className='viewButton'>View</div>
-            <div className="deleteButton">Delete</div>
+            <div className="deleteButton" 
+              onClick={(e) => {
+                setOpenDialogDelete(true);
+                setSelectedID(params.row.author_id)
+              }}
+            >
+              Delete
+            </div>
           </div>
         )
       }
     },
   ];
+
+  const handleDelete = async (authorID) => {
+    await Axios.delete(`http://localhost:3001/api/v1/manager/authors/delete/${authorID}`)
+    .then(res => {
+      console.log(res.data);
+      setResStateDeleteValue(res.data.state);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+    setOpenDialogDelete(false);
+    setShowAlertDelete(true);
+    setTimeout(() => setShowAlertDelete(false),2000);
+  }
 
   const getAllAuthor = async () => {
     try {
@@ -226,10 +281,27 @@ const Author = () => {
 
   useEffect(() => {
     getAllAuthor();
-  }, [searchInput])
+  }, [searchInput, resStateValue, resStateDeleteValue])
 
-    return (
-      <SearchInputContext.Provider value={{ getAllAuthor, listRow, setShow, setResStateValue, setShowAlert }}>
+  return (
+    <SearchInputContext.Provider value={{ getAllAuthor, listRow, setShow, setResStateValue, setShowAlert }}>
+      <Dialog
+        open={openDialogDelete}
+        keepMounted
+        onClose={(e) => setOpenDialogDelete(false)}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Xóa tác giả"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            Bạn xác nhận xóa tác giả này?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={(e) => handleDelete(seletedID)}>YES</Button>
+          <Button variant="outlined" onClick={(e) => setOpenDialogDelete(false)}>NO</Button>
+        </DialogActions>
+      </Dialog>
         <div className='authorContainer'>
           <div className='authorHeader'>
             <div className="search">
@@ -254,6 +326,7 @@ const Author = () => {
           </div>
           <Stack sx={{ width: '100%' }} spacing={2}>
             { showAlert && <Alert severity={resState[resStateValue].state}>{resState[resStateValue].alert}</Alert> }
+            { showAlertDelete && <Alert severity={resStateDelete[resStateDeleteValue].state}>{resStateDelete[resStateDeleteValue].alert}</Alert> }
           </Stack>
           {show && <AuthorAdd />}
           <div className='authorList'>

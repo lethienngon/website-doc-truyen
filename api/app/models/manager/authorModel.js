@@ -34,4 +34,24 @@ Author.getAll = (name, result) => {
     });
 };
 
+Author.delete = (id, result) => {
+    db.query("DELETE FROM author WHERE author_id = ? ", id, (err, res) => {
+        if (err) {
+            // err syntax or ...
+            console.log("error: ", err);
+            result(true, err);
+            return;
+        }
+        if (res.affectedRows == 0) {
+            // not found Author with the id
+            console.log("not found author with id: ", id);
+            result(true, { kind: "not_found" });
+            return;
+        }
+        // delete success
+        console.log("deleted author with id: ", id);
+        result(false, res);
+    });
+};
+
 module.exports = Author;

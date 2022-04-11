@@ -63,8 +63,31 @@ const findAll = (req, res) => {
     });
 };
 
+const deleteAuthor = (req, res) => {
+    Author.delete(req.params.authorID, (err, data) => {
+        if (err) {
+            if (data.kind === "not_found") {
+                res.send({
+                    state: 2,
+                    message: `Not found Author with id ${req.params.authorID}.`
+                });
+            } else {
+                res.send({
+                    state: 0,
+                    message: "Could not delete Author with id " + req.params.authorID
+                });
+            }
+        } else
+            res.send({
+                state: 1,
+                message: `AuthorID = ${req.params.authorID} was deleted successfully!`
+            });
+    });
+};
+
 module.exports = {
     addAuthor,
     uploadImage,
-    findAll
+    findAll,
+    deleteAuthor
 }

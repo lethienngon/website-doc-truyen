@@ -16,8 +16,6 @@ router.put('/edit/:authorID', (req, res, next) => {
     res.send("Edit author with ID = " + req.params.authorID)
 })
 
-router.delete('/delete/:authorID', (req, res, next) => {
-    res.send("Delete author with ID = " + req.params.authorID)
-})
+router.delete('/delete/:authorID', authorController.deleteAuthor);
 
 module.exports = router;

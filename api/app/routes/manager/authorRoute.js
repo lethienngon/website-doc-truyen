@@ -1,21 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const authorController = require('../../controllers/manager/authorController')
+const authorController = require('../../controllers/manager/authorController');
+
+// add one author
+router.post('/add', authorController.uploadImage, authorController.addAuthor);
 
 // findAll or find by name
 router.get('/', authorController.findAll);
 
-router.get('/:authorID', (req, res, next) => {
-    res.send("Get one author with ID = " + req.params.authorID)
-})
+// find a author by authorID
+router.get('/:authorID', authorController.findByAuthorID);
 
-// Add Author
-router.post('/add', authorController.uploadImage, authorController.addAuthor);
+// edit a author by authorID
+router.put('/edit/:authorID', authorController.uploadImage, authorController.updateAuthor);
 
-router.put('/edit/:authorID', (req, res, next) => {
-    res.send("Edit author with ID = " + req.params.authorID)
-})
-
+// delete a author
 router.delete('/delete/:authorID', authorController.deleteAuthor);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 client/node_modules/
 server/node_modules/
 api/node_modules/
-api/images/
+api/public/images/
 
 # env
 api/.env

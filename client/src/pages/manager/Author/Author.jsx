@@ -30,7 +30,7 @@ const AuthorAdd = () => {
   const [disable, setDisabled] = useState(true)
 
   // use object context
-  const { getAllAuthor, listRow, setShow, setResStateValue, setShowAlert } = useContext(SearchInputContext);
+  const { listRow, setShowAdd, setResStateAddValue, setShowAlertAdd } = useContext(SearchInputContext);
 
   // we use the help of useRef to test if it's the first render
   const firstRender = useRef(true);
@@ -78,39 +78,34 @@ const AuthorAdd = () => {
   }, [ nameAdd, selectedImage ])
 
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
 
     const formData = new FormData();
     formData.append('name', nameAdd)
     formData.append('description', descriptionAdd)
     formData.append('image', selectedImage)
 
-    Axios({
+    await Axios({
       method: "post",
       url: "http://localhost:3001/api/v1/manager/authors/add",
       data: formData,
       headers: { "Content-Type": "multipart/form-data" },
     }).then(res => {
-      setResStateValue(res.data.state);
-      console.log(res.data)
+      console.log(res.data);
+      setResStateAddValue(res.data.state);
     })
-    .catch(setResStateValue(0));
+    .catch(setResStateAddValue(0));
 
-    getAllAuthor();
-    setShow(false);
-
-    setShowAlert(true);
-    setTimeout(() => setShowAlert(false),2000);
+    setShowAdd(false);
+    setShowAlertAdd(true);
+    setTimeout(() => setShowAlertAdd(false),2000);
   }
 
   const imageChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       setSelectedImage(e.target.files[0]);
+      console.log("test");
     }
-  };
-
-  const removeSelectedImage = () => {
-    setSelectedImage("");
   };
 
   return (
@@ -134,7 +129,7 @@ const AuthorAdd = () => {
               alt="Avatar of Author"
               src={URL.createObjectURL(selectedImage)}
             />
-            <HideImageIcon className='iconRemove' onClick={removeSelectedImage}/>
+            <HideImageIcon className='iconRemove' onClick={(e) => setSelectedImage("")}/>
           </div>
         )}
       </div>
@@ -173,18 +168,163 @@ const AuthorAdd = () => {
   )
 }
 
+const AuthorEdit = () => {
+  const [ nameEdit, setNameEdit ] = useState("");
+  const [ descriptionEdit, setDescriptionEdit ] = useState("");
+  const [ selectedImage, setSelectedImage ] = useState("");
+  const [ alertNameEdit, setAlertNameEdit ] = useState("");
+  const [ alertSelectedImage, setAlertSelectedImage ] = useState("");
+  // we set it to true so that the form is disabled on first render
+  const [disable, setDisabled] = useState(true)
+
+  // use object context
+  const { listRow, setShowEdit, setResStateEditValue, setShowAlertEdit, seletedID } = useContext(SearchInputContext);
+
+  // we use the help of useRef to test if it's the first render
+  const firstRender = useRef(true);
+
+  useEffect(()=>{
+    // we want to skip validation on first render
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+
+    // here we can disable/enable the save button by wrapping the setState function
+    // in a call to the validation function which returns true/false
+    setDisabled(() => {
+      // get all author_name push into array author_name
+      const author_name = [];
+      listRow.map(row => (
+      author_name.push(row.author_name)
+      ))
+      if(nameEdit == "" && selectedImage == ""){
+        setAlertNameEdit("Tên tác giả không được trống!!!");
+        setAlertSelectedImage("Avatar không được để trống!!!");
+        return true;
+      }
+      else if(nameEdit == "" && selectedImage != ""){
+        setAlertNameEdit("Tên tác giả không được trống!!!");
+        setAlertSelectedImage("");
+        return true;
+      }
+      if(nameEdit != "" && selectedImage == ""){
+        setAlertNameEdit("");
+        setAlertSelectedImage("Avatar không được để trống!!!");
+        return true;
+      }
+      else if(author_name.find(name => name == nameEdit)){
+        setAlertNameEdit("Tên tác giả đã tồn tại!!!");
+        return true;
+      }
+      else{
+        setAlertNameEdit("");
+        setAlertSelectedImage("");
+        return false;
+      }
+      })
+  }, [ nameEdit, selectedImage ])
+
+
+  const handleSubmit = async () => {
+
+    const formData = new FormData();
+    formData.append('name', nameEdit)
+    formData.append('description', descriptionEdit)
+    formData.append('image', selectedImage)
+
+    await Axios({
+      method: "post",
+      url: `http://localhost:3001/api/v1/manager/authors/edit/${seletedID}`,
+      data: formData,
+      headers: { "Content-Type": "multipart/form-data" },
+    }).then(res => {
+      console.log(res.data);
+      setResStateEditValue(res.data.state);
+    })
+    .catch(setResStateEditValue(0));
+
+    setShowEdit(false);
+    setShowAlertEdit(true);
+    setTimeout(() => setShowAlertEdit(false),2000);
+  }
+
+  const imageChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedImage(e.target.files[0]);
+    }
+  };
+
+  return (
+    <div className='authorAdd'>
+      <div className='addAvatar'>
+        <label>
+          <AddPhotoAlternateIcon className='iconAdd'/>
+          <input
+            style={{display: "none"}}
+            id='inputAvatar'
+            accept="image/*"
+            type="file"
+            onChange={imageChange}
+          />
+        </label>
+        <p>{alertSelectedImage}</p>
+        {selectedImage && (
+          <div>
+            <Avatar 
+              className="avatar"
+              alt="Avatar of Author"
+              src={URL.createObjectURL(selectedImage)}
+            />
+            <HideImageIcon className='iconRemove' onClick={(e) => setSelectedImage("")}/>
+          </div>
+        )}
+      </div>
+      <div className='addTextField'>
+        <TextField
+          value={nameEdit}
+          id="outlined-name-input"
+          label="Name"
+          type="text"
+          onChange={(e) => setNameEdit(e.target.value)}
+        />
+        <p>{alertNameEdit}</p>
+        <TextareaAutosize
+          value={descriptionEdit}
+          minRows={6}
+          maxRows={10}
+          placeholder="Description..."
+          style={{ 
+                  width: 500,
+                  maxWidth: 770,
+                  maxHeight: 500,
+                  padding: 10,
+                  fontSize: 14
+                }}
+          onChange={(e) => setDescriptionEdit(e.target.value)}
+        />
+        <Button 
+          variant="contained" 
+          onClick={handleSubmit} 
+          disabled={disable}
+        >
+          Save
+        </Button>
+      </div>
+    </div>
+  )
+}
 const Author = () => {
 
-  const [ show, setShow ] = useState(false);
   const [ searchInput, setSearchInput ] = useState("");
   const [ listRow, setListRow ] = useState([]);
-  
-  const [ seletedID, setSelectedID ] = useState();
+  const [ seletedID, setSeletedID ] = useState();
 
-  // Alert add author
-  const [ showAlert, setShowAlert ] = useState(false);
-  const [ resStateValue, setResStateValue ] = useState(-1);
-  const resState = [
+  // Add author
+  const [ showAdd, setShowAdd ] = useState(false);
+  const [ showAlertAdd, setShowAlertAdd ] = useState(false);
+  const [ resStateAddValue, setResStateAddValue ] = useState(-1);
+  const resStateAdd = [
     {
       state: 'error',
       alert: "Có lỗi xảy ra!!!"
@@ -192,10 +332,6 @@ const Author = () => {
     { 
       state: 'success',
       alert: "Thêm tác giả thành công"
-    },
-    { 
-      state: 'success',
-      alert: "Xóa tác giả thành công"
     }
   ];
 
@@ -217,6 +353,9 @@ const Author = () => {
       alert: "Tác giả có id = " + seletedID + " không tồn tại"
     }
   ];
+
+  // Edit author
+  const [ showEdit, setShowEdit ] = useState(false);
 
   // Columns DataGrid
   const columns = [
@@ -241,11 +380,19 @@ const Author = () => {
 
         return (
           <div className='action'>
-            <div className='viewButton'>View</div>
+            <div className='viewButton'
+              onClick={(e) => {
+                setShowEdit(true);
+                setShowAdd(false);
+                setSeletedID(params.row.author_id)
+              }}
+            >
+              View
+              </div>
             <div className="deleteButton" 
               onClick={(e) => {
                 setOpenDialogDelete(true);
-                setSelectedID(params.row.author_id)
+                setSeletedID(params.row.author_id)
               }}
             >
               Delete
@@ -281,10 +428,10 @@ const Author = () => {
 
   useEffect(() => {
     getAllAuthor();
-  }, [searchInput, resStateValue, resStateDeleteValue])
+  }, [searchInput, resStateAddValue, resStateDeleteValue])
 
   return (
-    <SearchInputContext.Provider value={{ getAllAuthor, listRow, setShow, setResStateValue, setShowAlert }}>
+    <SearchInputContext.Provider value={{ listRow, setShowAdd, setResStateAddValue, setShowAlertAdd, seletedID }}>
       <Dialog
         open={openDialogDelete}
         keepMounted
@@ -309,7 +456,7 @@ const Author = () => {
                 type="text" 
                 placeholder="Search..."
                 value={searchInput}
-                disabled={show && 'disable'}
+                disabled={showAdd && 'disable'}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
               <SearchOutlinedIcon />
@@ -317,18 +464,23 @@ const Author = () => {
             <div 
               className='addButton'
               style={{
-                color: show ? "white" : "darkgreen",
-                backgroundColor: show ? "darkgreen" : "white"
+                color: showAdd ? "white" : "darkgreen",
+                backgroundColor: showAdd ? "darkgreen" : "white"
               }}
-              onClick={(e) => {setSearchInput(""); setShow(!show)}}
+              onClick={(e) => {
+                setSearchInput("");
+                setShowAdd(!showAdd);
+                setShowEdit(false);
+              }}
             >
               Add Author</div>
           </div>
           <Stack sx={{ width: '100%' }} spacing={2}>
-            { showAlert && <Alert severity={resState[resStateValue].state}>{resState[resStateValue].alert}</Alert> }
+            { showAlertAdd && <Alert severity={resStateAdd[resStateAddValue].state}>{resStateAdd[resStateAddValue].alert}</Alert> }
             { showAlertDelete && <Alert severity={resStateDelete[resStateDeleteValue].state}>{resStateDelete[resStateDeleteValue].alert}</Alert> }
           </Stack>
-          {show && <AuthorAdd />}
+          {showAdd && <AuthorAdd />}
+          {showEdit && <AuthorEdit />}
           <div className='authorList'>
             <DataGrid
                 rows={listRow}

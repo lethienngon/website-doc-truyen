@@ -11,11 +11,11 @@ app.use(cors());
 app.use('/api/v1', require('./app/routes/index'));
 
 // Static Image Folder
-app.use('/images', express.static('./images'))
+app.use('/public', express.static('public'));
 
 // Catch 404 and froward to error handler
 app.use(function(req, res, next) {
-    next(createError(404));
+    next(createError(404, 'Not found page!!!'));
 });
 
 const PORT = 3001;

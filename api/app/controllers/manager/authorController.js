@@ -39,13 +39,13 @@ const addAuthor = (req, res) => {
     // Save Author in the database
     Author.add(author, (err, data) => {
         if (err)
-            res.send({
-                state: 0,
+            res.status(500).send({
+                state: "error",
                 message: "Add author failed!!!"
             });
         else res.send({
-            state: 1,
-            message: "Add author success!!!"
+            state: "success",
+            message: "Add author success"
         });
 
     });
@@ -55,9 +55,9 @@ const findAll = (req, res) => {
     const name = req.query.name;
     Author.getAll(name, (err, data) => {
         if (err)
-            res.send({
-                state: 0,
-                message: err.message || "Some error occurred while retrieving Authors."
+            res.status(500).send({
+                state: "error",
+                message: "Some error occurred while retrieving Authors!!!"
             });
         else res.send(data);
     });
@@ -67,14 +67,14 @@ const findByAuthorID = (req, res) => {
     Author.findId(req.params.authorID, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
-                res.send({
-                    state: 2,
-                    message: `Not found Author with id ${req.params.authorID}.`
+                res.status(404).send({
+                    state: "warning",
+                    message: `Not found Author with id ${req.params.authorID}!`
                 });
             } else {
-                res.send({
-                    state: 0,
-                    message: "Error retrieving Author with id " + req.params.authorID
+                res.status(500).send({
+                    state: "error",
+                    message: "Error retrieving Author with id " + req.params.authorID + "!!!"
                 });
             }
         } else res.send(data);
@@ -92,19 +92,19 @@ const updateAuthor = (req, res) => {
     Author.update(req.params.authorID, authorupdate, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
-                res.send({
-                    state: 2,
-                    message: `Not found Author with id ${req.params.authorID}.`
+                res.status(404).send({
+                    state: "warning",
+                    message: `Not found Author with id ${req.params.authorID}!`
                 });
             } else {
-                res.send({
-                    state: 0,
-                    message: "Error update Author with id " + req.params.authorID
+                res.status(500).send({
+                    state: "error",
+                    message: "Error update Author with id " + req.params.authorID + "!!!"
                 });
             }
         } else res.send({
-            state: 1,
-            message: `AuthorID = ${req.params.authorID} was updated successfully!`
+            state: "success",
+            message: `Author with id ${req.params.authorID} was updated successfully`
         })
     })
 }
@@ -113,20 +113,20 @@ const deleteAuthor = (req, res) => {
     Author.delete(req.params.authorID, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
-                res.send({
-                    state: 2,
-                    message: `Not found Author with id ${req.params.authorID}.`
+                res.status(404).send({
+                    state: "warning",
+                    message: `Not found Author with id ${req.params.authorID}!`
                 });
             } else {
-                res.send({
-                    state: 0,
-                    message: "Could not delete Author with id " + req.params.authorID
+                res.status(500).send({
+                    state: "error",
+                    message: "Could not delete Author with id " + req.params.authorID + "!!!"
                 });
             }
         } else
             res.send({
-                state: 1,
-                message: `AuthorID = ${req.params.authorID} was deleted successfully!`
+                state: "success",
+                message: `Author with id ${req.params.authorID} was deleted successfully`
             });
     });
 };

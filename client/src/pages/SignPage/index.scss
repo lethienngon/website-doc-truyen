@@ -1,4 +1,6 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -7,7 +9,7 @@
 .box-sign {
     width: 100%;
     height: 100vh;
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(229,113,231,1) 0%, rgba(0,212,255,1) 100%);
+    background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(229, 113, 231, 1) 0%, rgba(0, 212, 255, 1) 100%);
 }
 
 .signpage {
@@ -21,15 +23,13 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-
-
-    input, button {
+    input,
+    button {
         border: none;
         outline: none;
         background-color: none;
     }
-
-    .form{
+    .form {
         position: relative;
         width: 600px;
         height: 100%;
@@ -38,60 +38,83 @@
         transition: -webkit-transform 1.2s ease-in-out;
         transition: transform 1.2s ease-in-out;
         transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
-
         h3 {
             width: 100%;
             font-size: 30px;
+            margin-bottom: -20px;
             text-align: center;
             text-transform: uppercase;
         }
-
         label {
             display: block;
             width: 260px;
-            margin: 15px auto;
+            margin: 0px auto;
             text-align: center;
-
-            span {
-                font-size: 14px;
-                font-weight: 600;
-                color: #505f75;
-                text-transform: uppercase;
-            }
-
             input {
                 display: block;
                 width: 100%;
-                margin-top: 5px;
+                margin-top: 30px;
+                margin-bottom: 2px;
                 font-size: 14px;
-                padding-bottom: 5px;
                 border-bottom: 1px solid rgba(90, 90, 90, 0.4);
                 text-align: center;
+                padding: 5px;
+            }
+            p {
+                color: crimson;
+                position: absolute;
+                font-size: 14px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            div {
+                display: flex;
+                align-items: flex-end;
+            }
+            .showPass,
+            .showRePass {
+                width: 25px;
+                height: 25px;
+                margin-bottom: 5px;
+                color: black;
+                background-color: white;
+            }
+            .inputImage {
+                display: flex;
+                align-items: center;
+                margin-top: 30px;
+                margin-bottom: -30px;
+                border: 0.5px solid #bbb;
+                border-radius: 10px;
+                transition: 1s;
+                &:hover {
+                    background-color: #ccc;
+                }
+            }
+            .iconImage {
+                font-size: 30px;
+                margin: 2px;
             }
         }
-
-        button {
+        &>button {
             display: block;
             margin: 0 auto;
             width: 260px;
             height: 36px;
             border-radius: 30px;
-            color:#fff;
+            color: #fff;
             cursor: pointer;
         }
-        
         .submit {
-            margin-top: 30px;
+            margin-top: 50px;
             margin-bottom: 30px;
             text-transform: uppercase;
             font-weight: 600;
             background: -webkit-linear-gradient(left, #7579ff, #b224ef);
         }
-          
         .submit:hover {
             background: -webkit-linear-gradient(left, #b224ef, #7579ff);
         }
-
         .forgot-password {
             margin-top: 15px;
             text-align: center;
@@ -99,31 +122,26 @@
             font-weight: 600;
             color: #0c0101;
             cursor: pointer;
-
             &:hover {
                 color: red;
             }
         }
-
         .social-media {
             width: 100%;
             display: flex;
             justify-content: center;
             margin-top: 20px;
-
             .icon {
                 margin: 10px;
                 cursor: pointer;
                 font-size: 40px;
                 transition: 0.2s;
-                
                 &:hover {
-                    color:#7579ff;
+                    color: #7579ff;
                 }
             }
         }
     }
-
     .sub-signpage {
         overflow: hidden;
         position: absolute;
@@ -136,7 +154,6 @@
         -webkit-transition: -webkit-transform 1.2s ease-in-out;
         transition: -webkit-transform 1.2s ease-in-out;
         transition: transform 1.2s ease-in-out;
-
         .img {
             overflow: hidden;
             z-index: 2;
@@ -146,7 +163,6 @@
             width: 300px;
             height: 100%;
             padding-top: 360px;
-
             &::before {
                 content: '';
                 position: absolute;
@@ -155,13 +171,12 @@
                 width: 900px;
                 height: 100%;
                 background-image: url(../../assets/images/register.jpg), url(../../assets/images/center.jpg), url(../../assets/images/login.jpg);
-                background-position: top left, center ,right bottom;
+                background-position: top left, center, right bottom;
                 background-repeat: no-repeat, no-repeat;
                 background-size: 300px 500px;
-                transition:  -webkit-transform 1.2s ease-in-out;
+                transition: -webkit-transform 1.2s ease-in-out;
                 transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
             }
-
             &::after {
                 content: '';
                 position: absolute;
@@ -169,9 +184,8 @@
                 top: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0,0,0,0.3);
+                background: rgba(0, 0, 0, 0.3);
             }
-
             .img-text {
                 z-index: 2;
                 position: absolute;
@@ -184,17 +198,14 @@
                 -webkit-transition: -webkit-transform 1.2s ease-in-out;
                 transition: -webkit-transform 1.2s ease-in-out;
                 transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
-
                 h2 {
                     margin-bottom: 10px;
                 }
-                
                 p {
                     font-size: 14px;
                     line-height: 1.5;
                 }
             }
-
             .img-btn {
                 overflow: hidden;
                 z-index: 2;
@@ -209,19 +220,17 @@
                 cursor: pointer;
                 border: 2px solid #fff;
                 border-radius: 30px;
-
                 &:hover {
                     border: 2px solid rgb(39, 240, 230);
                     border-radius: 30px;
                 }
-
-                span{
+                span {
                     position: absolute;
                     left: 0;
                     top: 0;
                     display: -webkit-box;
                     display: flex;
-                    -webkit-box-pack:center;
+                    -webkit-box-pack: center;
                     justify-content: center;
                     align-items: center;
                     width: 100%;
@@ -229,77 +238,73 @@
                     -webkit-transition: -webkit-transform 1.2s;
                     transition: -webkit-transform 1.2s;
                     transition: transform 1.2s;
-                    transition: transform 1.2s, -webkit-transform 1.2s;;
-
-                    &.m-in{
-                        -webkit-transform:translateY(-72px);
-                                transform:translateY(-72px);
+                    transition: transform 1.2s, -webkit-transform 1.2s;
+                    ;
+                    &.m-in {
+                        -webkit-transform: translateY(-72px);
+                        transform: translateY(-72px);
                     }
                 }
             }
         }
     }
-
     .login {
         margin-left: -300px;
         padding-top: 65px;
-        -webkit-transition-timing-function:ease-out;
-                transition-timing-function:ease-out;
+        -webkit-transition-timing-function: ease-out;
+        transition-timing-function: ease-out;
     }
-
     .register {
-        -webkit-transform:translate3d(-900px, 0, 0);
-                transform:translate3d(-900px, 0, 0);
+        -webkit-transform: translate3d(-900px, 0, 0);
+        transform: translate3d(-900px, 0, 0);
     }
 }
 
-.signpage.s-register .sub-signpage{
-    -webkit-transform:translate3d(-600px, 0, 0);
-            transform:translate3d(-600px, 0, 0);
+.signpage.s-register .sub-signpage {
+    -webkit-transform: translate3d(-600px, 0, 0);
+    transform: translate3d(-600px, 0, 0);
     .img-btn {
-        span.m-in{
-            -webkit-transform:translateY(0);
-                    transform:translateY(0);
+        span.m-in {
+            -webkit-transform: translateY(0);
+            transform: translateY(0);
         }
-        span.m-up{
-            -webkit-transform:translateY(72px);
-                    transform:translateY(72px);
+        span.m-up {
+            -webkit-transform: translateY(72px);
+            transform: translateY(72px);
         }
     }
-
     .img::before {
-        -webkit-transform:translate3d(600px, 0, 0);
-                transform:translate3d(600px, 0, 0);
+        -webkit-transform: translate3d(600px, 0, 0);
+        transform: translate3d(600px, 0, 0);
     }
 }
 
 .signpage.s-register .img-text {
     &.m-in {
-        -webkit-transform:translateX(0);
-                transform:translateX(0);
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
     }
     &.m-up {
-        -webkit-transform:translateX(520px);
-                transform:translateX(520px);
+        -webkit-transform: translateX(520px);
+        transform: translateX(520px);
     }
 }
 
 .signpage.s-register .login {
-    -webkit-transition-timing-function:ease-in-out;
-            transition-timing-function:ease-in-out;
-    -webkit-transition-duration:1.2s;
-            transition-duration:1.2s; 
-    -webkit-transform:translate3d(600px, 0, 0);
-            transform:translate3d(600px, 0, 0);
+    -webkit-transition-timing-function: ease-in-out;
+    transition-timing-function: ease-in-out;
+    -webkit-transition-duration: 1.2s;
+    transition-duration: 1.2s;
+    -webkit-transform: translate3d(600px, 0, 0);
+    transform: translate3d(600px, 0, 0);
 }
 
-.signpage.s-register .register{
-    -webkit-transform:translate3d(0, 0, 0);
-            transform:translate3d(0, 0, 0);
+.signpage.s-register .register {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
 }
 
-.img-text.m-in{
-    -webkit-transform:translateX(-520px);
-            transform:translateX(-520px);
-  }
- 
+.img-text.m-in {
+    -webkit-transform: translateX(-520px);
+    transform: translateX(-520px);
+}

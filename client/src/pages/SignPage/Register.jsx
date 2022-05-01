@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { Avatar } from "@mui/material";
 import * as yup from "yup";
@@ -17,7 +17,8 @@ function Register() {
 
     const [showPass, setShowPass] = useState(true);
     const [showRePass, setShowRePass] = useState(true);
-    const [selectedImage, setSelectedImage] = useState("");
+    const [selectedImage, setSelectedImage] = useState('');
+    const [userName, setUserName] = useState('');
 
     // const register = () => {
     //     Axios.post("http://localhost:3001/register", {
@@ -42,13 +43,13 @@ function Register() {
             registerUsername: yup.string()
                             .required('This field username is required')
                             .min(6,'Must be 6 characters or more')
-                            .max(100, 'Must be less than 100 characters'),
-                            // exist usename,
+                            .max(100, 'Must be less than 100 characters')
+                            .matches(/^(?=.*[A-Za-z])[A-Za-z\d]{6,100}$/,'Only contains alphanumeric characters'),
             registerPassword: yup.string()
                             .required('This field password is required')
                             .min(8,'Must be 8 characters or more')
                             .max(200, 'Must be less than 200 characters')
-                            .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,'At least one letter and one number'),
+                            .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,200}$/,'At least one letter and one number'),
             registerRePassword: yup.string()
                             .required('This field confirm password is required')
                             .oneOf([yup.ref("registerPassword"), null],'Password must match'),
@@ -62,8 +63,18 @@ function Register() {
                             .max(250, 'Must be less than 250 characters'),
             registerImage: yup.string().required('This field avatar is required'),
         }),
-        onSubmit: (values) => {
-            console.log(values);
+        onSubmit: async (values, actions) => {
+            await Axios.get('http://localhost:3001/api/v1/signpage/signup/findusername/'+userName)
+            .then((res) => {
+                if(res.data.user_username == formik.values.registerUsername){
+                    // actions.setSubmitting(false);
+                    formik.errors.registerUsername="Username already is use";
+                }
+                else {
+                    // formik.errors.registerUsername="";
+                }
+                console.log(formik.errors.registerUsername);
+        })
         }
     })
 
@@ -77,21 +88,24 @@ function Register() {
         <div className="form register">
             <h3>Đăng kí</h3>
             <label htmlFor="registerUsername">
-                <input 
+                <input
+                    value={formik.values.registerUsername}
                     type="text" 
                     id="registerUsername" 
                     name="registerUsername" 
                     placeholder="Vui lòng nhập Username"
-                    onChange={formik.handleChange}
+                    onChange={(e)=>{formik.handleChange(e);
+                                    setUserName(e.target.value)}}
                 />
                 {
                     formik.errors.registerUsername && 
-                    <p>{formik.errors.registerUsername}</p>
+                    <p title="/^(?=.*[A-Za-z])[A-Za-z\d]{6,100}$/">{formik.errors.registerUsername}</p>
                 }
             </label>
             <label htmlFor="registerPassword">
                 <div>
                     <input 
+                        value={formik.values.registerPassword}
                         type={showPass ? 'password' : 'text'} 
                         id="registerPassword" 
                         name="registerPassword" 
@@ -104,12 +118,13 @@ function Register() {
                 </div>
                 {
                     formik.errors.registerPassword && 
-                    <p>{formik.errors.registerPassword}</p>
+                    <p title="/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,200}$/">{formik.errors.registerPassword}</p>
                 }
             </label>
             <label htmlFor="registerRePassword">
                 <div>
                     <input 
+                    value={formik.values.registerRePassword}
                         type={showRePass ? 'password' : 'text'} 
                         id="registerRePassword" 
                         name="registerRePassword" 
@@ -127,6 +142,7 @@ function Register() {
             </label>
             <label htmlFor="registerName">
                 <input 
+                    value={formik.values.registerName}
                     type="text" 
                     id="registerName" 
                     name="registerName" 
@@ -140,6 +156,7 @@ function Register() {
             </label>
             <label htmlFor="registerEmail">
                 <input 
+                    value={formik.values.registerEmail}
                     type="text" 
                     id="registerEmail" 
                     name="registerEmail" 

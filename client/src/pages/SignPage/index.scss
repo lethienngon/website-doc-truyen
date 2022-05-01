@@ -58,7 +58,7 @@
                 font-size: 14px;
                 border-bottom: 1px solid rgba(90, 90, 90, 0.4);
                 text-align: center;
-                padding: 5px;
+                padding: 5px 25px;
             }
             p {
                 color: crimson;
@@ -82,6 +82,7 @@
                 margin-bottom: 5px;
                 color: black;
                 background-color: white;
+                margin-left: -20px;
             }
             .inputImage {
                 display: flex;

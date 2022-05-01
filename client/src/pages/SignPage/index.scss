@@ -66,6 +66,10 @@
                 font-size: 14px;
                 left: 50%;
                 transform: translateX(-50%);
+                width: 240px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
             div {
                 display: flex;
@@ -85,15 +89,17 @@
                 margin-top: 30px;
                 margin-bottom: -30px;
                 border: 0.5px solid #bbb;
-                border-radius: 10px;
+                border-radius: 30px;
                 transition: 1s;
                 &:hover {
                     background-color: #ccc;
                 }
+                p {
+                    width: 150px;
+                }
             }
             .iconImage {
-                font-size: 30px;
-                margin: 2px;
+                font-size: 40px;
             }
         }
         &>button {

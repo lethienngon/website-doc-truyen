@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
         cb(null, "./public/images/admin/users")
     },
     filename: (req, file, cb) => {
-        cb(null, 'author_' + Date.now() + path.extname(file.originalname))
+        cb(null, 'user_' + Date.now() + path.extname(file.originalname))
     }
 })
 
@@ -37,9 +37,6 @@ const addUser = (req, res) => {
         registerImage: req.file.path,
     });
 
-    console.log(req.file.path)
-    console.log(req.body)
-
     User.add(user, (err, data) => {
         if (err)
             res.status(500).send({
@@ -57,7 +54,7 @@ const findByRegisterUserName = (req, res) => {
     User.findUserName(req.params.username, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
-                res.status(404).send({
+                res.send({
                     state: "warning",
                     message: `Not found user with username ${req.params.username}!`
                 });

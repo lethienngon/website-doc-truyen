@@ -9,11 +9,7 @@ const User = function(user) {
 }
 
 User.add = (newUser, result) => {
-    db.query(`INSERT INTO user SET user_username='${newUser.user_username}',
-                                user_password='${newUser.user_password}',
-                                user_name='${newUser.user_name}',
-                                user_email='${newUser.user_email}',
-                                user_image='${newUser.user_image}'`,
+    db.query("INSERT INTO user SET ?", newUser,
         (err, res) => {
             if (err) {
                 // err syntax or ...

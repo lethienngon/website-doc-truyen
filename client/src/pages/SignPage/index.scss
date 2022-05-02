@@ -38,6 +38,9 @@
         transition: -webkit-transform 1.2s ease-in-out;
         transition: transform 1.2s ease-in-out;
         transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
+        .waitSubmit {
+            position: absolute;
+        }
         h3 {
             width: 100%;
             font-size: 30px;

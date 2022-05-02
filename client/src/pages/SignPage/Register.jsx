@@ -1,46 +1,35 @@
-import { useState, useEffect } from "react";
-import { useFormik } from "formik";
-import { Avatar } from "@mui/material";
-import * as yup from "yup";
+import { useState, useEffect } from 'react';
+import { useFormik } from 'formik';
+import { Avatar } from '@mui/material';
+import * as yup from 'yup';
 import Axios from 'axios';
-import { useAlert } from "react-alert";
+import { useAlert } from 'react-alert';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 function Register() {
-
-    // const [usernameReg, setUsernameReg] = useState("");
-    // const [passwordReg, setPasswordReg] = useState("");
-    // const [rePasswordReg, setRePasswordReg] = useState("");
-    // const [emailReg, setEmailReg] = useState("");
-    // const [nameReg, setNameReg] = useState("");
 
     const [showPass, setShowPass] = useState(true);
     const [showRePass, setShowRePass] = useState(true);
     const [selectedImage, setSelectedImage] = useState('');
     const [userName, setUserName] = useState('');
+    const [waitSubmit, setWaitSubmit] = useState(false);
 
-    // const register = () => {
-    //     Axios.post("http://localhost:3001/register", {
-    //         username: usernameReg,
-    //         password: passwordReg,
-    //         email: emailReg,
-    //     }).then((response) => {
-    //         console.log(response);
-    //     });
-    // };
-
+    // react-alert
     const alert = useAlert();
 
+    // formik
     const formik = useFormik({
         initialValues: {
-            registerUsername: "",
-            registerPassword: "",
-            registerRePassword: "",
-            registerName: "",
-            registerEmail: "",
-            registerImage: "",
+            registerUsername: '',
+            registerPassword: '',
+            registerRePassword: '',
+            registerName: '',
+            registerEmail: '',
+            registerImage: '',
         },
         validationSchema: yup.object().shape({
             registerUsername: yup.string()
@@ -55,7 +44,7 @@ function Register() {
                             .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,200}$/,'At least one letter and one number'),
             registerRePassword: yup.string()
                             .required('This field confirm password is required')
-                            .oneOf([yup.ref("registerPassword"), null],'Password must match'),
+                            .oneOf([yup.ref('registerPassword'), null],'Password must match'),
             registerName: yup.string()
                             .required('This field name is required')
                             .min(6,'Must be 6 characters or more')
@@ -67,20 +56,47 @@ function Register() {
             registerImage: yup.string().required('This field avatar is required'),
         }),
         onSubmit: async (values, actions) => {
-            await Axios.get('http://localhost:3001/api/v1/signpage/signup/findusername/'+userName)
-            .then((res) => {
-                if(res.data.user_username === formik.values.registerUsername){
-                    // actions.setSubmitting(false);
-                    formik.errors.registerUsername="Username already is use";
-                    alert.error(<p style={{ color: 'crimson'}}>Username already is use</p>);
-                    alert.success(<p style={{ color: 'green'}}>Add user successful</p>);
+            try{
+                setWaitSubmit(true);
+                const res = await Axios.get('http://localhost:3001/api/v1/signpage/signup/findusername/'+userName)
+                // console.log(res);
+                if(res.data.user_username){
+                    if(res.data.user_username === formik.values.registerUsername){
+                        actions.setSubmitting(false);
+                        formik.errors.registerUsername='Username already is use';
+                    }
                 }
                 else {
-                    // formik.errors.registerUsername="";
-                    alert.success("Add user success");
+                    const formData = new FormData();
+                    formData.append('registerUsername', formik.values.registerUsername);
+                    formData.append('registerPassword', formik.values.registerPassword);
+                    formData.append('registerName', formik.values.registerName);
+                    formData.append('registerEmail', formik.values.registerEmail);
+                    formData.append('registerImage', selectedImage);
+
+                    Axios({
+                        method: 'post',
+                        url: 'http://localhost:3001/api/v1/signpage/signup/add',
+                        data: formData,
+                        headers: { 'Content-Type': 'multipart/form-data' },
+                    })
+                    .then(() => {
+                        alert.success(<p style={{ color: 'green'}}>Add user successfully</p>);
+                        formik.resetForm();
+                        setSelectedImage('');
+                    })
+                    .catch(() => {
+                        alert.error(<p style={{ color: 'crimson'}}>Add user failed</p>);
+                    })
                 }
-                console.log(formik.errors.registerUsername);
-        })
+            }
+            catch(err){
+                console.log(err);
+                alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+            }
+            finally{
+                setWaitSubmit(false);
+            }
         }
     })
 
@@ -92,6 +108,7 @@ function Register() {
 
     return (
         <div className="form register">
+            { waitSubmit && <CircularProgress className='waitSubmit'/>}
             <h3>Đăng kí</h3>
             <label htmlFor="registerUsername">
                 <input

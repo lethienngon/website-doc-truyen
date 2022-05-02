@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import { Avatar } from "@mui/material";
 import * as yup from "yup";
 import Axios from 'axios';
+import { useAlert } from "react-alert";
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
@@ -29,6 +30,8 @@ function Register() {
     //         console.log(response);
     //     });
     // };
+
+    const alert = useAlert();
 
     const formik = useFormik({
         initialValues: {
@@ -66,12 +69,15 @@ function Register() {
         onSubmit: async (values, actions) => {
             await Axios.get('http://localhost:3001/api/v1/signpage/signup/findusername/'+userName)
             .then((res) => {
-                if(res.data.user_username == formik.values.registerUsername){
+                if(res.data.user_username === formik.values.registerUsername){
                     // actions.setSubmitting(false);
                     formik.errors.registerUsername="Username already is use";
+                    alert.error(<p style={{ color: 'crimson'}}>Username already is use</p>);
+                    alert.success(<p style={{ color: 'green'}}>Add user successful</p>);
                 }
                 else {
                     // formik.errors.registerUsername="";
+                    alert.success("Add user success");
                 }
                 console.log(formik.errors.registerUsername);
         })

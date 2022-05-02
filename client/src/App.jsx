@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { positions, Provider } from "react-alert";
+import AlertTemplate from "react-alert-template-basic";
 
 import SignPage from './pages/SignPage/SignPage';
 
@@ -29,9 +31,16 @@ import HomeGuest from "./pages/guest/HomeGuest/HomeGuest";
 
 import "./App.css";
 
+
+const options = {
+  timeout: 5000,
+  offset: '10px',
+  position: positions.TOP_RIGHT
+};
+
 function App() {
   return (
-    <div className="App">
+    <Provider className="App" template={AlertTemplate} {...options}>
       <BrowserRouter>
         <Routes>
           <Route path="/">
@@ -91,7 +100,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-    </div>
+    </Provider>
   );
 }
 

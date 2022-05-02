@@ -1,0 +1,16 @@
+#__react-alert__ .App div div {
+    background-color: #E5F6FD !important;
+    text-transform: none;
+    font-size: 14px !important;
+    width: 380px !important;
+}
+
+#__react-alert__ .App div div svg {
+    background-color: #3f2c11 !important;
+    border-radius: 50% !important;
+}
+
+#__react-alert__ .App div div>svg {
+    background-color: white !important;
+    border-radius: 50% !important;
+}

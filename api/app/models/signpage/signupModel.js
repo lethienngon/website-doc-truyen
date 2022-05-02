@@ -1,8 +1,12 @@
 const db = require('../../configs/database');
+const cryptoJs = require('crypto-js');
 
 const User = function(user) {
     this.user_username = user.registerUsername;
-    this.user_password = user.registerPassword;
+    this.user_password = cryptoJs.SHA256(
+        user.registerPassword +
+        user.registerUsername +
+        process.env.KEY_PASS).toString();
     this.user_name = user.registerName;
     this.user_email = user.registerEmail;
     this.user_image = user.registerImage;

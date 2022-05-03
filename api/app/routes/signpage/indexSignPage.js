@@ -1,8 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const signController = require('../../controllers/signpage/signController');
 
-// router.use('/signin', require('./signIn'));
+// add one user
+router.post('/signup/add', signController.uploadImage, signController.addUser);
 
-router.use('/signup', require('./signUp'));
+// check username exist?
+router.get('/signup/findusername/:username', signController.findByRegisterUserName);
+
+// login
+router.post('/signin/auth', signController.authLoginUser);
 
 module.exports = router;

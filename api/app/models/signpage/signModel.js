@@ -12,6 +12,14 @@ const User = function(user) {
     this.user_image = user.registerImage;
 }
 
+const Login = function(user) {
+    this.user_username = user.loginUsername;
+    this.user_password = cryptoJs.SHA256(
+        user.loginPassword +
+        user.loginUsername +
+        process.env.KEY_PASS).toString();
+}
+
 User.add = (newUser, result) => {
     db.query("INSERT INTO user SET ?", newUser,
         (err, res) => {
@@ -44,4 +52,24 @@ User.findUserName = (username, result) => {
     });
 };
 
-module.exports = User;
+Login.authUser = (userlogin, result) => {
+    db.query(`SELECT user_username, user_password FROM user WHERE
+        user_username = '${userlogin.user_username}' and
+        user_password = '${userlogin.user_password}'`,
+        (err, res) => {
+            if (err) {
+                console.log('err...');
+                result(err, null);
+                return;
+            }
+            if (res.length) {
+                console.log('Found username: ', res[0]);
+                result(null, res[0]);
+                return;
+            }
+            console.log('Not found user with username: ', userlogin);
+            result({ kind: 'not_found' }, null);
+        });
+};
+
+module.exports = { Login, User };

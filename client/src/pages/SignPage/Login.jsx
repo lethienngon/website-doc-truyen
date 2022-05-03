@@ -2,28 +2,23 @@ import { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Axios from 'axios';
+import { useAlert } from 'react-alert';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-import './index.scss'
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 function Login(){
 
-    // const [username, setUsername] = useState("");
-    // const [password, setPassword] = useState("");
-
     const [showPass, setShowPass] = useState(true);
+    const [waitSubmit, setWaitSubmit] = useState(false);
 
-    // const login = () => {
-    //     Axios.post("http://localhost:3001/login", {
-    //         username: username,
-    //         password: password,
-    //     }).then((response) => {
-    //         console.log(response);
-    //     });
-    // };
+    // react-alert
+    const alert = useAlert();
 
+    // formik
     const formik = useFormik({
         initialValues: {
             loginUsername: "",
@@ -33,17 +28,43 @@ function Login(){
             loginUsername: yup.string().required('This field username is required'),
             loginPassword: yup.string().required('This field password is required'),
         }),
-        onSubmit: (values) => {
-            console.log(values.loginUsername);
-            console.log(values.loginPassword);
+        onSubmit: async (values) => {
+
+            setWaitSubmit(true);
+
+            await Axios({
+                method: 'post',
+                url: 'http://localhost:3001/api/v1/signpage/signin/auth',
+                data: {
+                    loginUsername: values.loginUsername,
+                    loginPassword: values.loginPassword,
+                },
+            })
+            .then((res) => {
+                if(res.data.state=="not_found"){
+                    alert.error(<p style={{ color: 'crimson'}}>Incorrect username or password</p>);
+                }
+                else {
+                    alert.success(<p style={{ color: 'green'}}>Login successfully</p>);
+                }
+            })
+            .catch(() => {
+                    alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+            })
+            .finally(() => {
+                formik.resetForm();
+                setWaitSubmit(false);
+            })
         }
     })
 
     return (
         <div className="form login">
+            { waitSubmit && <CircularProgress className='waitSubmit'/>}
             <h3>Đăng Nhập</h3>
             <label htmlFor="loginUsername">
                 <input
+                    value={formik.values.loginUsername}
                     type="text" 
                     id="loginUsername" 
                     name="loginUsername" 
@@ -58,7 +79,8 @@ function Login(){
         
             <label htmlFor="loginPassword">
                 <div>
-                    <input 
+                    <input
+                        value={formik.values.loginPassword}
                         type={showPass ? 'password' : 'text'} 
                         id="loginPassword" 
                         name="loginPassword" 

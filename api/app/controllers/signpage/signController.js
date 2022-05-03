@@ -1,4 +1,4 @@
-const User = require('../../models/signpage/signupModel');
+const { Login, User } = require('../../models/signpage/signModel');
 const multer = require('multer');
 const path = require('path');
 
@@ -36,7 +36,6 @@ const addUser = (req, res) => {
         registerEmail: req.body.registerEmail,
         registerImage: req.file.path,
     });
-
     User.add(user, (err, data) => {
         if (err)
             res.status(500).send({
@@ -68,8 +67,31 @@ const findByRegisterUserName = (req, res) => {
     })
 }
 
+const authLoginUser = (req, res) => {
+    const userlogin = new Login({
+        loginUsername: req.body.loginUsername,
+        loginPassword: req.body.loginPassword,
+    });
+    Login.authUser(userlogin, (err, data) => {
+        if (err) {
+            if (err.kind === "not_found") {
+                res.send({
+                    state: "not_found",
+                    message: `Not found user with username ${req.body.loginUsername}!`
+                });
+            } else {
+                res.status(500).send({
+                    state: "error",
+                    message: "Error retrieving user with username " + req.body.loginUsername + "!!!"
+                });
+            }
+        } else res.send({ state: 'success' });
+    })
+}
+
 module.exports = {
     findByRegisterUserName,
     uploadImage,
-    addUser
+    addUser,
+    authLoginUser,
 };

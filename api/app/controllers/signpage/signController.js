@@ -1,6 +1,7 @@
 const { Login, User } = require('../../models/signpage/signModel');
 const multer = require('multer');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 
 // Config file storage
 const storage = multer.diskStorage({
@@ -67,6 +68,7 @@ const findByRegisterUserName = (req, res) => {
     })
 }
 
+let resfreshTokenList = [];
 const authLoginUser = (req, res) => {
     const userlogin = new Login({
         loginUsername: req.body.loginUsername,
@@ -85,8 +87,64 @@ const authLoginUser = (req, res) => {
                     message: "Error retrieving user with username " + req.body.loginUsername + "!!!"
                 });
             }
-        } else res.send({ state: 'success' });
+        } else {
+            console.log(data);
+            const accessToken = jwt.sign({
+                id: data.user_id,
+                role: data.role_id
+            }, process.env.JWT_ACCESS_KEY, { expiresIn: "40s" });
+            const refreshToken = jwt.sign({
+                id: data.user_id,
+                role: data.role_id
+            }, process.env.JWT_REFRESH_KEY, { expiresIn: "30d" });
+            resfreshTokenList.push(refreshToken);
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: false,
+                path: "/",
+                sameSite: 'strict',
+            })
+            res.status(200).json({ accessToken });
+        };
     })
+}
+
+const requestRefreshToken = (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+    // console.log("Cookie Server: " + req.cookies.refreshToken);
+    // console.log("Cookie Postman: " + req.headers.cookie);
+    if (!refreshToken) return res.status(401).json('You are not authenticated');
+    if (!resfreshTokenList.includes(refreshToken)) {
+        return res.status(403).json('Refresh token is not valid');
+    }
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY, (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        resfreshTokenList = resfreshTokenList.filter((token) => token !== refreshToken);
+        const newAccessToken = jwt.sign({
+            id: data.user_id,
+            role: data.role_id
+        }, process.env.JWT_ACCESS_KEY, { expiresIn: "40s" });
+        const newRefreshToken = jwt.sign({
+            id: data.user_id,
+            role: data.role_id
+        }, process.env.JWT_REFRESH_KEY, { expiresIn: "30d" });
+        resfreshTokenList.push(newRefreshToken);
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            secure: false,
+            path: "/",
+            sameSite: 'strict',
+        })
+        res.status(200).json({ newAccessToken });
+    })
+}
+
+const logoutUser = (req, res) => {
+    resfreshTokenList = resfreshTokenList.filter(token => token !== req.cookies.refreshToken);
+    res.clearCookie('refreshToken');
+    res.status(200).json('Logged out!');
 }
 
 module.exports = {
@@ -94,4 +152,6 @@ module.exports = {
     uploadImage,
     addUser,
     authLoginUser,
+    requestRefreshToken,
+    logoutUser,
 };

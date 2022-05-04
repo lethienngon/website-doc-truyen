@@ -1,10 +1,12 @@
 const createError = require('http-errors');
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors());
 
 // Setup router

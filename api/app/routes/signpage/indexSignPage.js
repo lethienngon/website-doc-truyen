@@ -7,7 +7,7 @@ const signController = require('../../controllers/signpage/signController');
 router.post('/signup/add', signController.uploadImage, signController.addUser);
 
 // check username exist?
-router.get('/signup/findusername/:username', jwtController.verifyTokenAndAdminAuth, signController.findByRegisterUserName);
+router.get('/signup/findusername/:username', signController.findByRegisterUserName);
 
 // login
 router.post('/signin/auth', signController.authLoginUser);

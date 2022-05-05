@@ -1,0 +1,56 @@
+.userContainer {
+    .userHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px;
+        .search {
+            display: flex;
+            align-items: center;
+            border: 0.5px solid lightgray;
+            border-radius: 5px;
+            padding: 3px 10px;
+            justify-content: space-between;
+            input {
+                width: 300px;
+                border: none;
+                outline: none;
+                &::placeholder {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+    .userList {
+        height: 575px;
+        width: 100%;
+        .avatar {
+            width: 80px;
+            height: 80px;
+        }
+        .action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            .viewButton {
+                width: 60px;
+                text-align: center;
+                padding: 2px 5px;
+                border-radius: 5px;
+                color: darkblue;
+                border: 1px solid darkblue;
+                cursor: pointer;
+            }
+            .deleteButton {
+                width: 60px;
+                text-align: center;
+                padding: 2px 5px;
+                border-radius: 5px;
+                color: crimson;
+                border: 1px solid crimson;
+                cursor: pointer;
+            }
+        }
+    }
+}

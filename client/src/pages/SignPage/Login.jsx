@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import Axios from 'axios';
 import { useAlert } from 'react-alert';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
@@ -9,11 +8,21 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { loginUser } from '../../redux/apiRequest';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { selectAuth } from "../../redux/authSlice";
+
 
 function Login(){
 
     const [showPass, setShowPass] = useState(true);
-    const [waitSubmit, setWaitSubmit] = useState(false);
+
+    // select waitSubmit (CircularProgress)
+    let selectorUser = useSelector(selectAuth);
+    // redux...
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     // react-alert
     const alert = useAlert();
@@ -29,38 +38,18 @@ function Login(){
             loginPassword: yup.string().required('This field password is required'),
         }),
         onSubmit: async (values) => {
-
-            setWaitSubmit(true);
-
-            await Axios({
-                method: 'post',
-                url: 'http://localhost:3001/api/v1/signpage/signin/auth',
-                data: {
-                    loginUsername: values.loginUsername,
-                    loginPassword: values.loginPassword,
-                },
-            })
-            .then((res) => {
-                if(res.data.state=="not_found"){
-                    alert.error(<p style={{ color: 'crimson'}}>Incorrect username or password</p>);
-                }
-                else {
-                    alert.success(<p style={{ color: 'green'}}>Login successfully</p>);
-                }
-            })
-            .catch(() => {
-                    alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
-            })
-            .finally(() => {
-                formik.resetForm();
-                setWaitSubmit(false);
-            })
+            const newUser = {
+                loginUsername: values.loginUsername,
+                loginPassword: values.loginPassword,
+            };
+            // Call api (apiRequest)
+            loginUser(newUser, dispatch, navigate, formik, alert);
         }
     })
 
     return (
         <div className="form login">
-            { waitSubmit && <CircularProgress className='waitSubmit'/>}
+            { selectorUser.login.waitSubmit && <CircularProgress className='waitSubmit'/>}
             <h3>Đăng Nhập</h3>
             <label htmlFor="loginUsername">
                 <input

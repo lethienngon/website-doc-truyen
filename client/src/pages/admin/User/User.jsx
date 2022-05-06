@@ -2,6 +2,7 @@ import { useState, useEffect} from 'react';
 import { DataGrid } from "@mui/x-data-grid";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Avatar, Button } from "@mui/material";
+import { useAlert } from 'react-alert';
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -10,7 +11,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getAllUsers } from '../../../redux/apiRequest';
+import { getAllUsers, deleteUser } from '../../../redux/apiRequest';
+import { openDialogDelete, closeDialogDelete } from '../../../redux/userSlice';
 
 
 import "./user.scss";
@@ -19,12 +21,15 @@ const User = () => {
 
     const [searchInput, setSearchInput] = useState("");
     const [seletedID, setSeletedID] = useState(-1);
-    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+
+    // react-alert
+    const alert = useAlert();
 
     // get accessToken
     const user = useSelector(state => state.auth.login.currentUser);
     // get list Users
     const listRow = useSelector(state => state.users.users.allUsers);
+    const stateDialogDelete = useSelector(state => state.users.openDialog.delete);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -35,7 +40,7 @@ const User = () => {
         else {
             getAllUsers(user.accessToken, dispatch, searchInput);
         }
-    }, [searchInput]);
+    }, [searchInput, stateDialogDelete]);
 
 
     // Columns DataGrid
@@ -80,7 +85,7 @@ const User = () => {
                         <div
                             className="deleteButton"
                             onClick={(e) => {
-                                setOpenDialogDelete(true);
+                                dispatch(openDialogDelete());
                                 setSeletedID(params.row.user_id);
                             }}
                         >
@@ -95,9 +100,9 @@ const User = () => {
     return (
         <>
         <Dialog
-                open={openDialogDelete}
+                open={stateDialogDelete}
                 keepMounted
-                onClose={(e) => setOpenDialogDelete(false)}
+                onClose={(e) => dispatch(closeDialogDelete())}
                 aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle>{"DELETE USER"}</DialogTitle>
@@ -109,13 +114,13 @@ const User = () => {
                 <DialogActions>
                     <Button
                         variant="contained"
-                        // onClick={(e) => handleDelete(seletedID)}
+                        onClick={(e) => deleteUser(user.accessToken, dispatch, alert, seletedID)}
                     >
                         YES
                     </Button>
                     <Button
                         variant="outlined"
-                        onClick={(e) => setOpenDialogDelete(false)}
+                        onClick={(e) => dispatch(closeDialogDelete())}
                     >
                         NO
                     </Button>

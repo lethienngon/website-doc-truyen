@@ -7,6 +7,9 @@ const userSlice = createSlice({
             allUsers: null,
             isFetching: false,
             error: false,
+        },
+        openDialog: {
+            delete: false,
         }
     },
     reducers: {
@@ -20,6 +23,22 @@ const userSlice = createSlice({
         getUsersFailed: (state) => {
             state.users.isFetching = false;
             state.users.error = true;
+        },
+        deleteUserStart: (state) => {
+            state.users.isFetching = true;
+        },
+        deleteUserSuccess: (state) => {
+            state.users.isFetching = false;
+        },
+        deleteUserFailed: (state) => {
+            state.users.isFetching = false;
+            state.users.error = true;
+        },
+        openDialogDelete: (state) => {
+            state.openDialog.delete = true;
+        },
+        closeDialogDelete: (state) => {
+            state.openDialog.delete = false;
         }
     }
 })
@@ -27,7 +46,12 @@ const userSlice = createSlice({
 export const {
     getUsersStart,
     getUsersSuccess,
-    getUsersFailed
+    getUsersFailed,
+    deleteUserStart,
+    deleteUserSuccess,
+    deleteUserFailed,
+    openDialogDelete,
+    closeDialogDelete
 } = userSlice.actions;
 
 export default userSlice.reducer;

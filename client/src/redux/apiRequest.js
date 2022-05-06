@@ -1,6 +1,6 @@
 import axios from "axios";
 import { loginFailed, loginStart, loginSuccess } from "./authSlice";
-import { getUsersStart, getUsersSuccess, getUsersFailed } from "./userSlice";
+import { getUsersStart, getUsersSuccess, getUsersFailed, deleteUserStart, deleteUserSuccess, deleteUserFailed, closeDialogDelete } from "./userSlice";
 
 // Login api
 export const loginUser = async(user, dispatch, navigate, formik, alert) => {
@@ -33,10 +33,35 @@ export const getAllUsers = async (accessToken, dispatch, searchInput) => {
         const response = await axios.get(`http://localhost:3001/api/v1/admin/users?name=${searchInput}`,
         {
             headers: { token: `Bearer ${accessToken}` },
-        }
-        );
+        });
         dispatch(getUsersSuccess(response.data));
     } catch (err) {
         dispatch(getUsersFailed());
+    }
+}
+
+// Delete user
+export const deleteUser = async(accessToken, dispatch, alert, selectedID) => {
+    dispatch(deleteUserStart());
+    try {
+        const res = await axios.delete(`http://localhost:3001/api/v1/admin/users/delete/${selectedID}`,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        if(res.data.state=='success'){
+            alert.success(<p style={{ color: 'green'}}>Delete successfully</p>);
+            dispatch(deleteUserSuccess());
+        }
+        else {
+            alert.error(<p style={{ color: 'crimson'}}>Not found user wit id {selectedID}</p>);
+            dispatch(deleteUserFailed());
+        }
+    }
+    catch (err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+        dispatch(deleteUserFailed());
+    }
+    finally {
+        dispatch(closeDialogDelete());
     }
 }

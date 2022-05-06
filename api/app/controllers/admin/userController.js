@@ -18,7 +18,7 @@ const deleteUser = (req, res) => {
     User.delete(req.params.userID, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
-                res.status(404).send({
+                res.send({
                     state: "warning",
                     message: `Not found User with id ${req.params.userID}!`
                 });

@@ -4,6 +4,6 @@ const jwtController = require('../../controllers/jwtController');
 const userController = require('../../controllers/admin/userController');
 
 
-router.get('/', userController.findAll);
+router.get('/', jwtController.verifyTokenAndAdminAuth, userController.findAll);
 
 module.exports = router;

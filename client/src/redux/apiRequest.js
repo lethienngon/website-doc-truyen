@@ -1,5 +1,6 @@
 import axios from "axios";
 import { loginFailed, loginStart, loginSuccess } from "./authSlice";
+import { getUsersStart, getUsersSuccess, getUsersFailed } from "./userSlice";
 
 // Login api
 export const loginUser = async(user, dispatch, navigate, formik, alert) => {
@@ -25,7 +26,17 @@ export const loginUser = async(user, dispatch, navigate, formik, alert) => {
     })
 }
 
-// Register api
-export const registerUser = async(user, dispatch, navigate, setWaitSubmit, formik, alert) => {
-
+// Get all user
+export const getAllUsers = async (accessToken, dispatch, searchInput) => {
+    dispatch(getUsersStart());
+    try {
+        const response = await axios.get(`http://localhost:3001/api/v1/admin/users?name=${searchInput}`,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        }
+        );
+        dispatch(getUsersSuccess(response.data));
+    } catch (err) {
+        dispatch(getUsersFailed());
+    }
 }

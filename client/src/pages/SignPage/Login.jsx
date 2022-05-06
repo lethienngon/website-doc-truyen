@@ -49,7 +49,7 @@ function Login(){
 
     return (
         <div className="form login">
-            { selectorUser.login.waitSubmit && <CircularProgress className='waitSubmit'/>}
+            { selectorUser.login.isFetching && <CircularProgress className='waitSubmit'/>}
             <h3>Đăng Nhập</h3>
             <label htmlFor="loginUsername">
                 <input

@@ -2,13 +2,31 @@ import { useState, useEffect} from 'react';
 import { DataGrid } from "@mui/x-data-grid";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Avatar } from "@mui/material";
-import Axios from "axios";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { getAllUsers } from '../../../redux/apiRequest';
 
 import "./user.scss";
+
 const User = () => {
 
     const [searchInput, setSearchInput] = useState("");
-    const [listRow, setListRow] = useState([]);
+    // get accessToken
+    const user = useSelector(state => state.auth.login.currentUser);
+    // get list Users
+    const listRow = useSelector(state => state.users.users.allUsers);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if(!user || !user.accessToken){
+            navigate('/signpage');
+        }
+        else {
+            getAllUsers(user.accessToken, dispatch, searchInput);
+        }
+    }, [searchInput]);
+
 
     // Columns DataGrid
     const columns = [
@@ -65,23 +83,6 @@ const User = () => {
             },
         },
     ];
-
-    const getAllAuthor = async () => {
-        try {
-            const response = await Axios.get(
-                `http://localhost:3001/api/v1/admin/users?name=${searchInput}`
-            );
-            setListRow(response.data);
-            console.log(response.data);
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
-
-    useEffect(() => {
-        getAllAuthor();
-        console.log(listRow);
-    }, [searchInput]);
 
     return (
         <div className="userContainer">

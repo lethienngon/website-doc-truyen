@@ -6,4 +6,6 @@ const userController = require('../../controllers/admin/userController');
 
 router.get('/', jwtController.verifyTokenAndAdminAuth, userController.findAll);
 
+router.delete('/delete/:userID', userController.deleteUser);
+
 module.exports = router;

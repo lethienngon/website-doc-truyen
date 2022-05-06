@@ -23,4 +23,24 @@ User.getAll = (name, result) => {
         });
 };
 
+User.delete = (id, result) => {
+    db.query("DELETE FROM user WHERE user_id = ? ", id, (err, res) => {
+        if (err) {
+            // err syntax or ...
+            console.log("Deleted error: ", err);
+            result(err, null);
+            return;
+        }
+        if (res.affectedRows == 0) {
+            // not found User with the id
+            console.log("Not found user with id: ", id);
+            result({ kind: "not_found" }, null);
+            return;
+        }
+        // delete success
+        console.log("Deleted user with id: ", id);
+        result(null, res);
+    });
+};
+
 module.exports = User;

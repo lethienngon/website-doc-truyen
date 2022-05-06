@@ -14,6 +14,29 @@ const findAll = (req, res) => {
     });
 };
 
+const deleteUser = (req, res) => {
+    User.delete(req.params.userID, (err, data) => {
+        if (err) {
+            if (err.kind === "not_found") {
+                res.status(404).send({
+                    state: "warning",
+                    message: `Not found User with id ${req.params.userID}!`
+                });
+            } else {
+                res.status(500).send({
+                    state: "error",
+                    message: "Could not delete User with id " + req.params.userID + "!!!"
+                });
+            }
+        } else
+            res.send({
+                state: "success",
+                message: `User with id ${req.params.userID} was deleted successfully`
+            });
+    });
+};
+
 module.exports = {
     findAll,
+    deleteUser,
 }

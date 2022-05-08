@@ -92,17 +92,17 @@ const authLoginUser = (req, res) => {
             const accessToken = jwt.sign({
                 id: data.user_id,
                 role: data.role_id
-            }, process.env.JWT_ACCESS_KEY, { expiresIn: "40s" });
+            }, process.env.JWT_ACCESS_KEY, { expiresIn: "60s" });
             const refreshToken = jwt.sign({
                 id: data.user_id,
                 role: data.role_id
             }, process.env.JWT_REFRESH_KEY, { expiresIn: "30d" });
             resfreshTokenList.push(refreshToken);
             res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: false,
+                httpOnly: true, // Day la khong cho Javascript lam viec voi Cookie
+                secure: false, // Chrome thi true hay false dieu duoc, nhung Postman thi phai false moi dung duoc cookie
                 path: "/",
-                sameSite: 'strict',
+                sameSite: "strict", // Co tai lieu noi chrome phai dung 'none' thi moi dung duoc
             })
             res.status(200).json({ accessToken });
         };
@@ -113,6 +113,7 @@ const requestRefreshToken = (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     // console.log("Cookie Server: " + req.cookies.refreshToken);
     // console.log("Cookie Postman: " + req.headers.cookie);
+    console.log(resfreshTokenList);
     if (!refreshToken) return res.status(401).json('You are not authenticated');
     if (!resfreshTokenList.includes(refreshToken)) {
         return res.status(403).json('Refresh token is not valid');
@@ -125,17 +126,17 @@ const requestRefreshToken = (req, res) => {
         const newAccessToken = jwt.sign({
             id: data.user_id,
             role: data.role_id
-        }, process.env.JWT_ACCESS_KEY, { expiresIn: "40s" });
+        }, process.env.JWT_ACCESS_KEY, { expiresIn: "60s" });
         const newRefreshToken = jwt.sign({
             id: data.user_id,
             role: data.role_id
         }, process.env.JWT_REFRESH_KEY, { expiresIn: "30d" });
         resfreshTokenList.push(newRefreshToken);
         res.cookie('refreshToken', newRefreshToken, {
-            httpOnly: true,
-            secure: false,
+            httpOnly: true, // Day la khong cho Javascript lam viec voi Cookie
+            secure: false, // Chrome thi true hay false dieu duoc, nhung Postman thi phai false moi dung duoc cookie
             path: "/",
-            sameSite: 'strict',
+            sameSite: "strict", // Co tai lieu noi chrome phai dung 'none' thi moi dung duoc
         })
         res.status(200).json({ newAccessToken });
     })

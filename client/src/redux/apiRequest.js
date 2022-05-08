@@ -1,6 +1,46 @@
 import axios from "axios";
+import jwt_decode from 'jwt-decode';
+import store from '../redux/store';
 import { loginFailed, loginStart, loginSuccess } from "./authSlice";
-import { getUsersStart, getUsersSuccess, getUsersFailed, deleteUserStart, deleteUserSuccess, deleteUserFailed, closeDialogDelete } from "./userSlice";
+import { getUsersStart, getUsersSuccess, getUsersFailed, 
+        deleteUserStart, deleteUserSuccess, deleteUserFailed, 
+        closeDialogDelete } from "./userSlice";
+const axiosJWT = axios.create();
+// If you use cors in backend, you must withCredentials = true
+// if you set { withCredentials = true } can have error
+axios.defaults.withCredentials = true; 
+
+
+// Call in axiosJWT
+const refreshTokenAPI = async () => {
+    try {
+        const res = await axios.post('http://localhost:3001/api/v1/signpage/refresh');
+        return res.data;
+    }
+    catch(err) {
+        console.log(err);
+    }
+}
+// Refresh token when accessToken expires
+axiosJWT.interceptors.request.use( async config => {
+    const user = store.getState().auth.login.currentUser;
+    const decodeToken = jwt_decode(user.accessToken);
+    let date = new Date();
+    if( decodeToken.exp < date.getTime()/1000){
+        const data = await refreshTokenAPI();
+        const refreshUser = {
+            ...user,
+            accessToken: data.newAccessToken,
+        }
+        config.headers["token"] = "Bearer " + data.newAccessToken;
+        store.dispatch(loginSuccess(refreshUser));
+    }
+    return config;        
+},
+(err) => {
+    Promise.reject(err);
+}
+);
 
 // Login api
 export const loginUser = async(user, dispatch, navigate, formik, alert) => {
@@ -30,7 +70,7 @@ export const loginUser = async(user, dispatch, navigate, formik, alert) => {
 export const getAllUsers = async (accessToken, dispatch, searchInput) => {
     dispatch(getUsersStart());
     try {
-        const response = await axios.get(`http://localhost:3001/api/v1/admin/users?name=${searchInput}`,
+        const response = await axiosJWT.get(`http://localhost:3001/api/v1/admin/users?name=${searchInput}`,
         {
             headers: { token: `Bearer ${accessToken}` },
         });

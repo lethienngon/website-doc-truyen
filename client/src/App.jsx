@@ -35,7 +35,7 @@ import "./App.css";
 const options = {
   timeout: 5000,
   offset: '10px',
-  position: positions.TOP_RIGHT
+  position: positions.TOP_CENTER
 };
 
 function App() {

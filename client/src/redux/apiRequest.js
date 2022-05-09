@@ -1,7 +1,8 @@
 import axios from "axios";
 import jwt_decode from 'jwt-decode';
-import store from '../redux/store';
-import { loginFailed, loginStart, loginSuccess } from "./authSlice";
+import { store } from '../redux/store';
+import { loginFailed, loginStart, loginSuccess,
+        logOutStart, logOutSuccess, logOutFailed } from "./authSlice";
 import { getUsersStart, getUsersSuccess, getUsersFailed, 
         deleteUserStart, deleteUserSuccess, deleteUserFailed, 
         closeDialogDelete } from "./userSlice";
@@ -103,5 +104,22 @@ export const deleteUser = async(accessToken, dispatch, alert, selectedID) => {
     }
     finally {
         dispatch(closeDialogDelete());
+    }
+}
+
+// Logout
+export const logOutUser = async (dispatch, navigate, accessToken, alert) => {
+    dispatch(logOutStart());
+    try {
+        await axiosJWT.post("http://localhost:3001/api/v1/signpage/logout", null, {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        alert.success(<p style={{ color: 'green'}}>Logout successfully</p>);
+        navigate('/signpage');
+        dispatch(logOutSuccess());
+    }
+    catch(err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+        dispatch(logOutFailed());
     }
 }

@@ -222,7 +222,7 @@ function Register() {
                     }
                 </div>
             </label>
-            <button type='submit' onClick={formik.handleSubmit} className="submit">Đăng kí</button>
+            <button type='submit' onClick={formik.handleSubmit} className={waitSubmit ? "submit disabled" : "submit"}>Đăng kí</button>
         </div>
     );
 }

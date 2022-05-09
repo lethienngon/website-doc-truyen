@@ -1,12 +1,28 @@
 import "./sidebar.scss";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useAlert } from "react-alert";
 
-import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import CircularProgress from '@mui/material/CircularProgress';
+
+import { logOutUser } from"../../redux/apiRequest";
 
 const Sidebar = (props) => {
+
+    const user = useSelector(state => state.auth.login.currentUser);
+    const isFetching = useSelector(state => state.auth.login.isFetching);
+    const accessToken = user?.accessToken;
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const alert = useAlert();
+
+    const handleLogOut = () => {
+        logOutUser(dispatch, navigate, accessToken, alert);
+    }
     return (
         <div className='sidebar'>
             <div className="top">
@@ -44,9 +60,10 @@ const Sidebar = (props) => {
                         <AccountCircleOutlinedIcon className="icon" />
                         <span>Profile</span>
                     </li>
-                    <li>
+                    <li onClick={handleLogOut} className={isFetching ? "disabled" : ""}>
                         <LogoutOutlinedIcon className="icon" />
                         <span>Logout</span>
+                        { isFetching && <CircularProgress size="1rem" className='waitSubmitSmallCircel'/>}
                     </li>
                 </ul>
             </div>

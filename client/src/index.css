@@ -17,3 +17,8 @@
     background-color: white !important;
     border-radius: 50% !important;
 }
+
+.disabled {
+    pointer-events:none;
+    opacity:0.6;
+}

@@ -1,4 +1,6 @@
 import { Outlet } from "react-router-dom";
+import { useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
@@ -13,9 +15,21 @@ import SupervisedUserCircleOutlinedIcon from '@mui/icons-material/SupervisedUser
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
 
+import { useSelector } from 'react-redux';
+
 import "./adminlayout.scss";
 
 const AdminLayout = () => {
+
+    const user = useSelector(state => state.auth.login.currentUser);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if(!user || !user?.accessToken){
+            navigate('/signpage');
+        }
+    }, []);
+
     return (
         <div className="admin">
             <Sidebar

@@ -53,10 +53,10 @@ User.findUserName = (username, result) => {
 };
 
 Login.authUser = (userlogin, result) => {
-    db.query(`SELECT user_username, user_password, role_id, u.user_id 
-        FROM user u join role_user ru on u.user_id=ru.user_id WHERE
-        user_username = '${userlogin.user_username}' and
-        user_password = '${userlogin.user_password}'`,
+    db.query(`SELECT user_username, user_password, role_name, u.user_id 
+        FROM user u join role_user ru on u.user_id=ru.user_id join role r on r.role_id=ru.role_id
+        WHERE user_username = '${userlogin.user_username}'
+        and user_password = '${userlogin.user_password}'`,
         (err, res) => {
             if (err) {
                 console.log('err...');

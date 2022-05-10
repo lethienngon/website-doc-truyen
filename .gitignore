@@ -5,3 +5,4 @@ api/public/images/
 
 # env
 api/.env
+client/.env

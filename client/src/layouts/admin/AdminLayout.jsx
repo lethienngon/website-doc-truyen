@@ -22,10 +22,11 @@ import "./adminlayout.scss";
 const AdminLayout = () => {
 
     const user = useSelector(state => state.auth.login.currentUser);
+    const role = useSelector(state => state.auth.login.role);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(!user || !user?.accessToken){
+        if(!user || !user?.accessToken || role != 'Admin'){
             navigate('/signpage');
         }
     }, []);

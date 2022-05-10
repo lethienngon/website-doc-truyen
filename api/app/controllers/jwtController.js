@@ -22,9 +22,64 @@ const jwtController = {
         }
     },
 
+    // Auth own
+    verifyTokenAndOwnAuth: (req, res, next) => {
+        jwtController.verifyToken(req, res, () => {
+            if (req.user.id == req.params.userID) {
+                next();
+            } else {
+                console.log("You are not authorization own");
+                return res.status(403).json("You are not authorization own");
+            }
+        })
+    },
+
+    // Auth Member
+    verifyTokenAndMemberAuth: (req, res, next) => {
+        jwtController.verifyToken(req, res, () => {
+            if (req.user.role == process.env.AUTH_MEMBER
+                || req.user.role == process.env.AUTH_TRANSLATOR 
+                || req.user.role == process.env.AUTH_MANAGER
+                || req.user.role == process.env.AUTH_ADMIN) {
+                next();
+            } else {
+                console.log("You are not authorization member");
+                return res.status(403).json("You are not authorization member");
+            }
+        })
+    },
+
+    // Auth Translator
+    verifyTokenAndTranslatorAuth: (req, res, next) => {
+        jwtController.verifyToken(req, res, () => {
+            if (req.user.role == process.env.AUTH_TRANSLATOR 
+                || req.user.role == process.env.AUTH_MANAGER
+                || req.user.role == process.env.AUTH_ADMIN) {
+                next();
+            } else {
+                console.log("You are not authorization translator");
+                return res.status(403).json("You are not authorization translator");
+            }
+        })
+    },
+
+    // Auth Manager
+    verifyTokenAndManagerAuth: (req, res, next) => {
+        jwtController.verifyToken(req, res, () => {
+            if (req.user.role == process.env.AUTH_MANAGER
+                || req.user.role == process.env.AUTH_ADMIN) {
+                next();
+            } else {
+                console.log("You are not authorization manager");
+                return res.status(403).json("You are not authorization manager");
+            }
+        })
+    },
+
+    // Auth Admin
     verifyTokenAndAdminAuth: (req, res, next) => {
         jwtController.verifyToken(req, res, () => {
-            if (req.user.id == req.params.userID || req.user.role == '01') {
+            if (req.user.role == process.env.AUTH_ADMIN) {
                 next();
             } else {
                 console.log("You are not authorization admin");

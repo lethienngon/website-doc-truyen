@@ -1,7 +1,7 @@
 import axios from "axios";
 import jwt_decode from 'jwt-decode';
 import { store } from '../redux/store';
-import { loginFailed, loginStart, loginSuccess,
+import { loginFailed, loginStart, loginSuccess, setRole,
         logOutStart, logOutSuccess, logOutFailed } from "./authSlice";
 import { getUsersStart, getUsersSuccess, getUsersFailed, 
         deleteUserStart, deleteUserSuccess, deleteUserFailed, 
@@ -55,7 +55,14 @@ export const loginUser = async(user, dispatch, navigate, formik, alert) => {
         else {
             alert.success(<p style={{ color: 'green'}}>Login successfully</p>);
             dispatch(loginSuccess(res.data));
-            navigate('/admin');
+            console.log(process.env.REACT_APP_AUTH_TRANSLATOR);
+            const decodeToken = jwt_decode(res.data.accessToken);
+            dispatch(setRole(decodeToken.role));
+            if(decodeToken.role == 'Admin') navigate('/admin');
+            else if(decodeToken.role == 'Manager') navigate('/manager');
+            else if(decodeToken.role == 'Translator') navigate('/translator');
+            else if(decodeToken.role == 'Member') navigate('/member');
+            else navigate('/');
         }
     })
     .catch(() => {

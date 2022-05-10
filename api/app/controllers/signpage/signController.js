@@ -91,11 +91,11 @@ const authLoginUser = (req, res) => {
             console.log(data);
             const accessToken = jwt.sign({
                 id: data.user_id,
-                role: data.role_id
+                role: data.role_name
             }, process.env.JWT_ACCESS_KEY, { expiresIn: "60s" });
             const refreshToken = jwt.sign({
                 id: data.user_id,
-                role: data.role_id
+                role: data.role_name
             }, process.env.JWT_REFRESH_KEY, { expiresIn: "30d" });
             resfreshTokenList.push(refreshToken);
             res.cookie('refreshToken', refreshToken, {
@@ -125,11 +125,11 @@ const requestRefreshToken = (req, res) => {
         resfreshTokenList = resfreshTokenList.filter((token) => token !== refreshToken);
         const newAccessToken = jwt.sign({
             id: data.user_id,
-            role: data.role_id
+            role: data.role_name
         }, process.env.JWT_ACCESS_KEY, { expiresIn: "60s" });
         const newRefreshToken = jwt.sign({
             id: data.user_id,
-            role: data.role_id
+            role: data.role_name
         }, process.env.JWT_REFRESH_KEY, { expiresIn: "30d" });
         resfreshTokenList.push(newRefreshToken);
         res.cookie('refreshToken', newRefreshToken, {

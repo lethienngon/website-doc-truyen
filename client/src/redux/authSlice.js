@@ -5,6 +5,7 @@ const authSlice = createSlice({
     initialState: {
         login: {
             currentUser: null,
+            role: null,
             isFetching: false,
             error: false,
         }
@@ -22,12 +23,17 @@ const authSlice = createSlice({
             state.login.isFetching = false;
             state.login.error = true;
         },
+        setRole: (state, action) => {
+            state.login.role = action.payload;
+        }
+        ,
         logOutStart: (state) => {
             state.login.isFetching = true;
         },
         logOutSuccess: (state) => {
             state.login.isFetching = false;
             state.login.currentUser = null;
+            state.login.role = null;
             state.login.error = false;
         },
         logOutFailed: (state) => {
@@ -41,6 +47,7 @@ export const {
     loginStart,
     loginSuccess,
     loginFailed,
+    setRole,
     logOutStart,
     logOutSuccess,
     logOutFailed

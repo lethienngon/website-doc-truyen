@@ -27,7 +27,9 @@ const AdminLayout = () => {
 
     useEffect(() => {
         if(!user || !user?.accessToken || role != 'Admin'){
-            navigate('/signpage');
+            if(role == 'Manager') navigate('/manager');
+            else if(role == 'Translator') navigate('/translator');
+            else navigate('/');
         }
     }, []);
 

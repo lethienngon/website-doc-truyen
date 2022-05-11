@@ -55,7 +55,6 @@ export const loginUser = async(user, dispatch, navigate, formik, alert) => {
         else {
             alert.success(<p style={{ color: 'green'}}>Login successfully</p>);
             dispatch(loginSuccess(res.data));
-            console.log(process.env.REACT_APP_AUTH_TRANSLATOR);
             const decodeToken = jwt_decode(res.data.accessToken);
             dispatch(setRole(decodeToken.role));
             if(decodeToken.role == 'Admin') navigate('/admin');
@@ -128,5 +127,84 @@ export const logOutUser = async (dispatch, navigate, accessToken, alert) => {
     catch(err) {
         alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
         dispatch(logOutFailed());
+    }
+}
+
+// Add Category
+export const addCategory = async (name, description, accessToken, alert) => {
+    try{
+        const res = await axiosJWT.post('http://localhost:3001/api/v1/manager/categorys/add',
+        {
+            name: name,
+            description: description
+        },
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        alert.success(<p style={{ color: 'green'}}>Add Category successfully</p>);
+    }catch (err){
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
+// Get all Categorys
+export const getAllCategorys = async (searchInput, accessToken, alert) => {
+    try {
+        const response = await axiosJWT.get(`http://localhost:3001/api/v1/manager/categorys?name=${searchInput}`,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        return response.data;
+    } catch (err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
+// Get Category by ID
+export const getCategoryByID = async (selectedID, accessToken, alert) => {
+    try{
+        const res = await axiosJWT.get('http://localhost:3001/api/v1/manager/categorys/'+selectedID,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        return res.data;
+    }catch (err){
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
+// Edit Category
+export const editCategory = async (name, description, selectedID, accessToken, alert) => {
+    try{
+        const res = await axiosJWT.patch('http://localhost:3001/api/v1/manager/categorys/edit/'+selectedID,
+        {
+            name: name,
+            description: description
+        },
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        alert.success(<p style={{ color: 'green'}}>Edit Category successfully</p>);
+    }catch (err){
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
+// Delete Category
+export const deleteCategory = async(selectedID, accessToken, alert) => {
+    try {
+        const res = await axiosJWT.delete(`http://localhost:3001/api/v1/manager/categorys/delete/${selectedID}`,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        if(res.data.state=='success'){
+            alert.success(<p style={{ color: 'green'}}>Delete successfully</p>);
+        }
+        else {
+            alert.error(<p style={{ color: 'crimson'}}>Not found category wit id {selectedID}</p>);
+        }
+    }
+    catch (err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
     }
 }

@@ -1,0 +1,115 @@
+.categoryContainer {
+    .categoryHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px;
+        .search {
+            display: flex;
+            align-items: center;
+            border: 0.5px solid lightgray;
+            border-radius: 5px;
+            padding: 3px 10px;
+            justify-content: space-between;
+            input {
+                width: 300px;
+                border: none;
+                outline: none;
+                &::placeholder {
+                    font-size: 12px;
+                }
+            }
+        }
+        .addButton {
+            width: 150px;
+            text-align: center;
+            padding: 5px;
+            border-radius: 5px;
+            color: darkgreen;
+            border: 1px solid darkgreen;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+    }
+    .authorForm {
+        display: flex;
+        margin: 10px;
+        padding: 20px;
+        border: 0.5px solid lightgrey;
+        border-radius: 5px;
+        min-height: 300px;
+        gap: 20px;
+        .addAvatar {
+            width: 280px;
+            height: 300px;
+            p {
+                color: crimson;
+                font-size: 14px;
+                margin-left: 50px;
+            }
+            .iconAdd {
+                cursor: pointer;
+                font-size: 50px;
+                margin-bottom: -30px;
+                margin-left: -10px;
+            }
+            .iconRemove {
+                cursor: pointer;
+                font-size: 50px;
+                margin-top: -20px;
+                margin-left: -10px;
+            }
+            .avatar {
+                width: 250px;
+                height: 250px;
+            }
+        }
+        .addTextField {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            p {
+                color: crimson;
+                font-size: 14px;
+            }
+        }
+        .buttonForm {
+            button {
+                width: 100px;
+                margin-right: 20px;
+            }
+        }
+    }
+    .categoryList {
+        height: 575px;
+        width: 100%;
+        .avatar {
+            width: 80px;
+            height: 80px;
+        }
+        .action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            .viewButton {
+                width: 60px;
+                text-align: center;
+                padding: 2px 5px;
+                border-radius: 5px;
+                color: darkblue;
+                border: 1px solid darkblue;
+                cursor: pointer;
+            }
+            .deleteButton {
+                width: 60px;
+                text-align: center;
+                padding: 2px 5px;
+                border-radius: 5px;
+                color: crimson;
+                border: 1px solid crimson;
+                cursor: pointer;
+            }
+        }
+    }
+}

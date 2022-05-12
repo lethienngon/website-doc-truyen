@@ -6,6 +6,7 @@ const authSlice = createSlice({
         login: {
             currentUser: null,
             role: null,
+            id: null,
             isFetching: false,
             error: false,
         }
@@ -25,6 +26,9 @@ const authSlice = createSlice({
         },
         setRole: (state, action) => {
             state.login.role = action.payload;
+        },
+        setId: (state, action) => {
+            state.login.id = action.payload;
         }
         ,
         logOutStart: (state) => {
@@ -48,6 +52,7 @@ export const {
     loginSuccess,
     loginFailed,
     setRole,
+    setId,
     logOutStart,
     logOutSuccess,
     logOutFailed

@@ -38,6 +38,20 @@ Author.getAll = (name, result) => {
     });
 };
 
+Author.getAllIdName = (result) => {
+    db.query('SELECT author_id, author_name FROM author', (err, res) => {
+        // err syntax or ...
+        if (err) {
+            console.log("Find error: ", err);
+            result(err, null);
+            return;
+        }
+        // find success
+        console.log("Author: ", res);
+        result(null, res);
+    });
+};
+
 Author.findId = (id, result) => {
     db.query(`SELECT * FROM author WHERE author_id = ${id}`, (err, res) => {
         if (err) {

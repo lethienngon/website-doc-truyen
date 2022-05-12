@@ -7,6 +7,8 @@ router.post('/add', jwtController.verifyTokenAndManagerAuth, categoryController.
 
 router.get('/', jwtController.verifyTokenAndManagerAuth, categoryController.findAll);
 
+router.get('/idname', jwtController.verifyTokenAndManagerAuth, categoryController.findAllIdName);
+
 router.get('/:categoryID', jwtController.verifyTokenAndManagerAuth, categoryController.findByCategoryID);
 
 router.patch('/edit/:categoryID', jwtController.verifyTokenAndManagerAuth, categoryController.updateCategory);

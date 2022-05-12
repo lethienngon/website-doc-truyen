@@ -63,6 +63,17 @@ const findAll = (req, res) => {
     });
 };
 
+const findAllIdName = (req, res) => {
+    Author.getAllIdName((err, data) => {
+        if (err)
+            res.status(500).send({
+                state: "error",
+                message: "Some error occurred while retrieving Authors!!!"
+            });
+        else res.status(200).send(data);
+    });
+};
+
 const findByAuthorID = (req, res) => {
     Author.findId(req.params.authorID, (err, data) => {
         if (err) {
@@ -135,6 +146,7 @@ module.exports = {
     uploadImage,
     addAuthor,
     findAll,
+    findAllIdName,
     findByAuthorID,
     updateAuthor,
     deleteAuthor

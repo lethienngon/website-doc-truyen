@@ -8,6 +8,8 @@ router.post('/add', authorController.uploadImage, authorController.addAuthor);
 // findAll or find by name
 router.get('/', authorController.findAll);
 
+router.get('/idname', authorController.findAllIdName);
+
 // find a author by authorID
 router.get('/:authorID', authorController.findByAuthorID);
 

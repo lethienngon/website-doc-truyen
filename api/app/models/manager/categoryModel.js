@@ -33,6 +33,20 @@ Category.getAll = (name, result) => {
     });
 };
 
+Category.getAllIdName = (result) => {
+    db.query('SELECT category_id, category_name FROM category', (err, res) => {
+        // err syntax or ...
+        if (err) {
+            console.log("Find error: ", err);
+            result(err, null);
+            return;
+        }
+        // find success
+        console.log("Category: ", res);
+        result(null, res);
+    });
+};
+
 Category.findId = (id, result) => {
     db.query(`SELECT * FROM category WHERE category_id = ${id}`, (err, res) => {
         if (err) {

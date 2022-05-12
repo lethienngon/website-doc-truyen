@@ -31,6 +31,17 @@ const findAll = (req, res) => {
     });
 };
 
+const findAllIdName = (req, res) => {
+    Category.getAllIdName((err, data) => {
+        if (err)
+            res.status(500).send({
+                state: "error",
+                message: "Some error occurred while retrieving Categorys!!!"
+            });
+        else res.status(200).send(data);
+    });
+};
+
 const findByCategoryID = (req, res) => {
     Category.findId(req.params.categoryID, (err, data) => {
         if (err) {
@@ -101,6 +112,7 @@ const deleteCategory = (req, res) => {
 module.exports = {
     addCategory,
     findAll,
+    findAllIdName,
     findByCategoryID,
     updateCategory,
     deleteCategory

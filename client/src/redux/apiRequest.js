@@ -1,7 +1,7 @@
 import axios from "axios";
 import jwt_decode from 'jwt-decode';
 import { store } from '../redux/store';
-import { loginFailed, loginStart, loginSuccess, setRole,
+import { loginFailed, loginStart, loginSuccess, setRole, setId,
         logOutStart, logOutSuccess, logOutFailed } from "./authSlice";
 import { getUsersStart, getUsersSuccess, getUsersFailed, 
         deleteUserStart, deleteUserSuccess, deleteUserFailed, 
@@ -57,6 +57,7 @@ export const loginUser = async(user, dispatch, navigate, formik, alert) => {
             dispatch(loginSuccess(res.data));
             const decodeToken = jwt_decode(res.data.accessToken);
             dispatch(setRole(decodeToken.role));
+            dispatch(setId(decodeToken.id));
             if(decodeToken.role == 'Admin') navigate('/admin');
             else if(decodeToken.role == 'Manager') navigate('/manager');
             else if(decodeToken.role == 'Translator') navigate('/translator');
@@ -160,6 +161,19 @@ export const getAllCategorys = async (searchInput, accessToken, alert) => {
     }
 }
 
+// Get all Id Name of Categorys
+export const getAllIdNameCategorys = async (accessToken, alert) => {
+    try {
+        const response = await axiosJWT.get("http://localhost:3001/api/v1/manager/categorys/idname",
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        return response.data;
+    } catch (err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
 // Get Category by ID
 export const getCategoryByID = async (selectedID, accessToken, alert) => {
     try{
@@ -206,5 +220,38 @@ export const deleteCategory = async(selectedID, accessToken, alert) => {
     }
     catch (err) {
         alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
+// Get all Id Name of Author
+export const getAllIdNameAuthors = async (accessToken, alert) => {
+    try {
+        const response = await axiosJWT.get("http://localhost:3001/api/v1/manager/authors/idname",
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        return response.data;
+    } catch (err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
+// Add Story
+export const addStory = async (formData, accessToken, alert) => {
+    try{
+        await axiosJWT({
+                method: 'post',
+                url: 'http://localhost:3001/api/v1/manager/storys/add',
+                data: formData,
+                headers: { 
+                    'Content-Type': 'multipart/form-data',
+                    token: `Bearer ${accessToken}`
+                },
+            });
+            alert.success(<p style={{ color: 'green'}}>Add Category successfully</p>);
+            return true;
+    }catch (err){
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+        return false;
     }
 }

@@ -12,7 +12,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 import { useSelector } from 'react-redux';
-import { addStory, getAllStorys, getStoryByID, editStory, deleteStory } from '../../../redux/apiRequest';
+import { getAllStorys } from '../../../redux/apiRequest';
 
 import StoryAdd from "./StoryAdd";
 import "./story.scss";
@@ -33,16 +33,33 @@ const Story = () => {
 
     const user = useSelector(state => state.auth.login.currentUser);
 
-    // useEffect(async () => {
-    //     const temp = await getAllStorys(searchInput, user.accessToken, alert);
-    //     setListRow(temp);
-    // }, [searchInput, showAdd, showEdit, showDelete]);
+    useEffect(async () => {
+        const temp = await getAllStorys(searchInput, user.accessToken, alert);
+        setListRow(temp);
+    }, [searchInput, showAdd, showEdit, showDelete]);
 
     // Columns DataGrid
     const columns = [
         { field: "truyen_id", headerName: "ID", width: 100 },
-        { field: "truyen_type", headerName: "Type", width: 150 },
-        { field: "truyen_name", headerName: "Name", width: 300 },
+        { 
+            field: "truyen_type", 
+            headerName: "Type", 
+            width: 70,
+            renderCell: (params) => {
+                let type = '';
+                if(params.row.truyen_type=='10'){
+                    type = 'Truyện Tranh'
+                }
+                else if(params.row.truyen_type=='20'){
+                    type = 'Truyện Chữ'
+                }
+                else type = '???';
+                return (
+                    <p>{type}</p>
+                )
+            }
+        },
+        { field: "truyen_name", headerName: "Name", width: 200 },
         {
             field: "truyen_image",
             headerName: "Avatar",
@@ -60,9 +77,35 @@ const Story = () => {
                 );
             },
         },
-        { field: "truyen_status", headerName: "Status", width: 100 },
+        { field: "category_name", headerName: "Categorys",  width: 150 },
+        { field: "author_name", headerName: "Authors",  width: 120 },
+        { 
+            field: "truyen_status", 
+            headerName: "Status", 
+            width: 80,
+            renderCell: (params) => {
+                let type = '';
+                let color = '';
+                if(params.row.truyen_status=='01'){
+                    type = 'Active';
+                    color = 'green';
+                }
+                else if(params.row.truyen_status=='00'){
+                    type = 'Clock';
+                    color = 'crimson'
+                }
+                else type = '???';
+                return (
+                    <span style={{  padding: '10px',
+                                    backgroundColor: color, 
+                                    borderRadius: '30px'}}>
+                        <p style={{ color: 'white'}}>{type}</p>
+                    </span>
+                )
+            },
+        },
         { field: "truyen_view", headerName: "View", width: 100 },
-        { field: "truyen_created_at", headerName: "Create at", width: 200 },
+        { field: "user_name", headerName: "User create",  width: 120 },
         {
             field: "action",
             headerName: "Action",
@@ -155,7 +198,7 @@ const Story = () => {
                     <DataGrid
                         rows={listRow}
                         columns={columns}
-                        getRowId={(listRow) => listRow.story_id}
+                        getRowId={(listRow) => listRow.truyen_id}
                         rowHeight={90}
                         pageSize={5}
                         rowsPerPageOptions={[5]}

@@ -255,3 +255,16 @@ export const addStory = async (formData, accessToken, alert) => {
         return false;
     }
 }
+
+// Get all Storys
+export const getAllStorys = async (searchInput, accessToken, alert) => {
+    try {
+        const response = await axiosJWT.get(`http://localhost:3001/api/v1/manager/storys?name=${searchInput}`,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        return response.data;
+    } catch (err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}

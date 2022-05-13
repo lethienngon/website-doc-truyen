@@ -65,7 +65,20 @@ const addStory = (req, res) => {
     });
 };
 
+const findAll = (req, res) => {
+    const name = req.query.name;
+    Story.getAll(name, (err, data) => {
+        if (err)
+            res.status(500).send({
+                state: "error",
+                message: "Some error occurred while retrieving Storys!!!"
+            });
+        else res.status(200).send(data);
+    });
+};
+
 module.exports = {
     uploadImage,
     addStory,
+    findAll,
 }

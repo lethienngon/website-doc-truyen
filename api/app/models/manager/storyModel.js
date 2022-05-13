@@ -56,4 +56,80 @@ Story.addAuthor = (truyen_id, authors, result) => {
     }
 }
 
+function getCategorys(truyen_id) {
+    return new Promise(function(resolve, reject){
+        db.query(`SELECT c.category_name FROM category c join truyen_category tc 
+                on c.category_id=tc.category_id WHERE tc.truyen_id=${truyen_id}`, function (err, res) {
+                if (err) {
+                    console.log("List categorys error: ", err);
+                    reject(err)
+                    return;
+                }
+                let listCategory = '';
+                Object.keys(res).forEach(function (key) {
+                    listCategory += res[key].category_name + ', ';
+                });
+                listCategory = listCategory.slice(0, -2);
+                resolve(listCategory);
+            });
+    })
+}
+
+function getAuthors(truyen_id) {
+    return new Promise(function(resolve, reject){
+        db.query(`SELECT a.author_name FROM author a join truyen_author ta
+                on a.author_id=ta.author_id WHERE ta.truyen_id=${truyen_id}`, function (err, res) {
+                if (err) {
+                    console.log("List authors error: ", err);
+                    reject(err)
+                    return;
+                }
+                let listAuthor = '';
+                Object.keys(res).forEach(function (key) {
+                    listAuthor += res[key].author_name + ', ';
+                });
+                listAuthor = listAuthor.slice(0, -2);
+                resolve(listAuthor);
+            });
+    })
+}
+
+Story.getAll = (name, result) => {
+    db.query(`SELECT t.*, u.user_name FROM truyen t join user u on t.user_id=u.user_id 
+                WHERE truyen_name LIKE '%${name}%'`, async (err, res) => {
+        if (err) {
+            console.log("Find error: ", err);
+            result(err, null);
+            return;
+        }
+        console.log("Story: ", res);
+        const listCategory = res.map(async (story) => {
+            let categorys = '';
+            let authors = '';
+            await getCategorys(story.truyen_id)
+            .then(function(result){
+                categorys = result;
+            })
+            .catch(function(err){
+                console.log("Promise rejection error: "+err);
+            })
+            await getAuthors(story.truyen_id)
+            .then(function(result){
+                authors = result;
+            })
+            .catch(function(err){
+                console.log("Promise rejection error: "+err);
+            })
+            return {
+                ...story,
+                category_name: categorys,
+                author_name: authors
+            }
+        })
+        const data = await Promise.all(listCategory)
+        console.log(data);
+        result(null, data);
+    });
+};
+
 module.exports = Story;

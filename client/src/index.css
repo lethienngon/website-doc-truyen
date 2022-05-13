@@ -22,3 +22,21 @@
     pointer-events:none;
     opacity:0.6;
 }
+
+.MuiDataGrid-viewport,
+.MuiDataGrid-row,
+.MuiDataGrid-renderingZone {
+    max-height: fit-content !important ;
+}
+
+.MuiDataGrid-cell {
+    max-height: fit-content !important;
+    overflow: auto;
+    max-height: inherit;
+    white-space: initial !important;
+    line-height: 16px !important;
+    display: flex !important;
+    align-items: center;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}

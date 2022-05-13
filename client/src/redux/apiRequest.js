@@ -282,6 +282,25 @@ export const getStoryByID = async (selectedID, accessToken, alert) => {
     }
 }
 
+// Edit Category
+export const editStory = async (selectedID, formData, accessToken, alert) => {
+    try{
+        await axiosJWT({
+            method: 'patch',
+            url: 'http://localhost:3001/api/v1/manager/storys/edit/'+selectedID,
+            data: formData,
+            headers: { 
+                'Content-Type': 'multipart/form-data',
+                token: `Bearer ${accessToken}`
+            },
+        });
+        alert.success(<p style={{ color: 'green'}}>Edit Story successfully</p>);
+        return true;
+    }catch (err){
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
 // Delete Story
 export const deleteStory = async(selectedID, accessToken, alert) => {
     try {

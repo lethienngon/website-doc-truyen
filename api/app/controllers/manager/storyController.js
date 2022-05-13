@@ -15,17 +15,7 @@ const storage = multer.diskStorage({
 // Upload Image
 const uploadImage = multer({
     storage: storage,
-    limits: { fileSize: '10000' },
-    fileFilter: (req, file, cb) => {
-        const fileTypes = /jpeg|jpg|png|gif/
-        const mimType = fileTypes.test(file.mimetype)
-        const extname = fileTypes.test(path.extname(file.originalname))
-
-        if (mimType && extname) {
-            return cb(null, true)
-        }
-        cb('Give proper files fomate to upload')
-    }
+    limits: { fileSize: '10000' }
 }).single('image');
 
 const addStory = (req, res) => {
@@ -95,6 +85,55 @@ const findByStoryID = (req, res) => {
     });
 };
 
+const updateStory = (req, res) => {
+    let story = {
+        truyen_type: req.body.type,
+        truyen_status: req.body.status,
+        truyen_name: req.body.name,
+        truyen_description: req.body.description,
+    }
+    if(req.file){
+        story = {
+            ...story,
+            truyen_image: req.file.path
+        };
+    }
+    Story.update(req.params.storyID, story, (err, data) => {
+        if (err)
+            if (err.kind === "not_found") {
+                res.status(404).send({
+                    state: "warning",
+                    message: `Not found Story with id ${req.params.storyID}!`
+            });
+        } else {
+            res.status(500).send({
+                state: "error",
+                message: "Error update Story with id " + req.params.storyID + "!!!"
+            });
+        }
+        else {
+            Story.addCategory(req.params.storyID, req.body.category, (err, data) => {
+                if (err)
+                    res.status(500).send({
+                        state: "error",
+                        message: data
+                    })
+            })
+            Story.addAuthor(req.params.storyID, req.body.author, (err, data) => {
+                if (err)
+                    res.status(500).send({
+                        state: "error",
+                        message: data
+                    })
+            })
+            res.status(200).send({
+                state: "success",
+                message: "Add story and truyen_categorys success"
+            })
+        }
+    });
+};
+
 const deleteStory = (req, res) => {
     Story.delete(req.params.storyID, (err, data) => {
         if (err) {
@@ -122,5 +161,6 @@ module.exports = {
     addStory,
     findAll,
     findByStoryID,
+    updateStory,
     deleteStory,
 }

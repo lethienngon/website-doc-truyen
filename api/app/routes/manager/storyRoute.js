@@ -7,8 +7,10 @@ router.post('/add', jwtController.verifyTokenAndManagerAuth, storyController.upl
 
 router.get('/', jwtController.verifyTokenAndManagerAuth, storyController.findAll);
 
-router.get('/:storyID',  storyController.findByStoryID);
+router.get('/:storyID', jwtController.verifyTokenAndManagerAuth, storyController.findByStoryID);
 
-router.delete('/delete/:storyID', jwtController.verifyTokenAndManagerAuth, storyController.deleteStory);
+router.patch('/edit/:storyID', jwtController.verifyTokenAndManagerAuth, storyController.uploadImage, storyController.updateStory);
+
+router.delete('/delete/:storyID', jwtController.verifyTokenAndManagerAuth, jwtController.verifyTokenAndManagerAuth, storyController.deleteStory);
 
 module.exports = router;

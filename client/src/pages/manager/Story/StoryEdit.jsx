@@ -17,7 +17,7 @@ import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 
 import { useSelector } from 'react-redux';
-import { getAllIdNameCategorys, getAllIdNameAuthors, addStory, getStoryByID } from '../../../redux/apiRequest';
+import { getAllIdNameCategorys, getAllIdNameAuthors, editStory, getStoryByID } from '../../../redux/apiRequest';
 
 import "./story.scss";
 
@@ -38,10 +38,10 @@ const StoryEdit = ({setShowEdit, seletedID}) => {
     const [listAuthor, setListAuthor] = useState([]);
 
     const user = useSelector(state => state.auth.login.currentUser);
-    const user_id = useSelector(state => state.auth.login.id);
     const alert = useAlert();
 
     const [selectedImage, setSelectedImage] = useState("");
+    const [editImage, setEditImage] = useState('');
     const [waitSubmit, setWaitSubmit] = useState(false);
 
     let storyByID = [];
@@ -59,8 +59,10 @@ const StoryEdit = ({setShowEdit, seletedID}) => {
         formik.values.category = storyByID[0].arrayCategory;
         formik.values.author = storyByID[0].arrayAuthor;
         formik.values.description = storyByID[0].truyen_description;
+        formik.values.image = storyByID[0].truyen_image
+        setEditImage(storyByID[0].truyen_image);
         setLoad(true);
-    },[load])
+    },[load, seletedID])
 
     const handleChangeCategory = (e) => {
         formik.values.category = () => {e.target.value.split(',')}
@@ -96,15 +98,19 @@ const StoryEdit = ({setShowEdit, seletedID}) => {
             try{
                     setWaitSubmit(true);
                     const formData = new FormData();
-                    formData.append('user_id', user_id );
                     formData.append('type', values.type);
                     formData.append('name', values.name);
+                    formData.append('status', values.status);
                     formData.append('category', values.category);
                     formData.append('author', values.author);
                     formData.append('description', values.description);
-                    formData.append('image', selectedImage);
+                    if(!editImage) {
+                        formData.append('image', selectedImage);
+                    }else {
+                        formData.append('image', null);
+                    }
                     
-                    let status =  await addStory(formData, user.accessToken, alert);
+                    let status =  await editStory(seletedID, formData, user.accessToken, alert);
                     if(status) {
                         formik.resetForm();
                         setSelectedImage('');
@@ -123,6 +129,7 @@ const StoryEdit = ({setShowEdit, seletedID}) => {
     const imageChange = (e) => {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedImage(e.target.files[0]);
+            setEditImage(false);
         }
     };
 
@@ -145,12 +152,12 @@ const StoryEdit = ({setShowEdit, seletedID}) => {
                     />
                 </label>
                 { formik.errors.image && <p>{formik.errors.image}</p> }
-                {selectedImage && (
+                {(selectedImage || editImage) && (
                     <div>
                         <Avatar
                             className="avatar"
                             alt="Avatar of Author"
-                            src={URL.createObjectURL(selectedImage)}
+                            src={ editImage ? 'http://localhost:3001/'+editImage : URL.createObjectURL(selectedImage) }
                         />
                         <HideImageIcon
                             className="iconRemove"

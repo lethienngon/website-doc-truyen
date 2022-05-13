@@ -186,36 +186,23 @@ Story.findId = (id, result) => {
     });
 };
 
-// Story.update = (id, story, result) => {
-//     let query = 'UPDATE story SET ';
-//     if(story.story_name) {
-//         query += `story_name = '${story.story_name}'`
-//     }
-//     if(story.story_description){
-//         if(story.story_name) {
-//             query += ', '
-//         }
-//         query += `story_description = '${story.story_description}'`
-//     }
-//     query += ` WHERE story_id = ${id}`
-//     db.query(query, (err, res) => {
-//             if (err) {
-//                 // err
-//                 console.log("Updated error: ", err);
-//                 result(err, null);
-//                 return;
-//             }
-//             if (res.affectedRows == 0) {
-//                 // not found story with the id
-//                 console.log("Not found story with id: ", id);
-//                 result({ kind: "not_found" }, null);
-//                 return;
-//             }
-//             console.log("Updated story: ", { id: id, ...story });
-//             result(null, { id: id, ...story });
-//         }
-//     );
-// };
+Story.update = (id, story, result) => {
+    db.query('UPDATE truyen SET ? WHERE truyen_id = ?',[story, id], (err, res) => {
+            if (err) {
+                console.log("Updated error: ", err);
+                result(err, null);
+                return;
+            }
+            if (res.affectedRows == 0) {
+                console.log("Not found story with id: ", id);
+                result({ kind: "not_found" }, null);
+                return;
+            }
+            console.log("Updated story: ", { id: id, ...story });
+            result(null, { id: id, ...story });
+        }
+    );
+};
 
 Story.delete = (id, result) => {
     db.query("DELETE FROM truyen WHERE truyen_id = ? ", id, (err, res) => {

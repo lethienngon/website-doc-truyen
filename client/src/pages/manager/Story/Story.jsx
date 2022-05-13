@@ -120,8 +120,7 @@ const Story = () => {
                     <div className="action">
                         <div
                             className="viewButton"
-                            onClick={async (e) => {
-                                // let temp = await getStoryByID(params.row.Story_id, user.accessToken, alert)
+                            onClick={(e) => {
                                 setSeletedID(params.row.truyen_id);
                                 setShowEdit(true);
                                 setShowAdd(false);

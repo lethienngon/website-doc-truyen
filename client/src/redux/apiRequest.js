@@ -215,7 +215,7 @@ export const deleteCategory = async(selectedID, accessToken, alert) => {
             alert.success(<p style={{ color: 'green'}}>Delete successfully</p>);
         }
         else {
-            alert.error(<p style={{ color: 'crimson'}}>Not found category wit id {selectedID}</p>);
+            alert.error(<p style={{ color: 'crimson'}}>Not found category with id {selectedID}</p>);
         }
     }
     catch (err) {
@@ -265,6 +265,25 @@ export const getAllStorys = async (searchInput, accessToken, alert) => {
         });
         return response.data;
     } catch (err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
+// Delete Story
+export const deleteStory = async(selectedID, accessToken, alert) => {
+    try {
+        const res = await axiosJWT.delete(`http://localhost:3001/api/v1/manager/storys/delete/${selectedID}`,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        if(res.data.state=='success'){
+            alert.success(<p style={{ color: 'green'}}>Delete successfully</p>);
+        }
+        else {
+            alert.error(<p style={{ color: 'crimson'}}>Not found story with id {selectedID}</p>);
+        }
+    }
+    catch (err) {
         alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
     }
 }

@@ -32,7 +32,7 @@ const MenuProps = {
   },
 };
 
-const StoryAdd = () => {
+const StoryAdd = ({setShowAdd}) => {
 
     const [listCategory, setListCategory] = useState([]);
     const [listAuthor, setListAuthor] = useState([]);
@@ -255,7 +255,7 @@ const StoryAdd = () => {
                 <div className="buttonForm">
                     <Button
                         variant="contained"
-                        onClick={formik.handleSubmit}
+                        onClick={(e) => {formik.handleSubmit(e); setShowAdd(false)}}
                     >
                         Save
                     </Button>

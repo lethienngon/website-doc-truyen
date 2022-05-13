@@ -12,7 +12,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 import { useSelector } from 'react-redux';
-import { getAllStorys } from '../../../redux/apiRequest';
+import { getAllStorys, deleteStory } from '../../../redux/apiRequest';
 
 import StoryAdd from "./StoryAdd";
 import "./story.scss";
@@ -127,10 +127,10 @@ const Story = () => {
                         </div>
                         <div
                             className="deleteButton"
-                            // onClick={(e) => {
-                            //     setShowDelete(true);
-                            //     setSeletedID(params.row.Story_id);
-                            // }}
+                            onClick={(e) => {
+                                setShowDelete(true);
+                                setSeletedID(params.row.truyen_id);
+                            }}
                         >
                             Delete
                         </div>
@@ -142,7 +142,7 @@ const Story = () => {
 
     return (
         <>
-            {/* <Dialog open={showDelete} onClose={(e) => setShowDelete(false)}>
+            <Dialog open={showDelete} onClose={(e) => setShowDelete(false)}>
                 <DialogTitle>{"DELETE Story"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -166,7 +166,7 @@ const Story = () => {
                         NO
                     </Button>
                 </DialogActions>
-            </Dialog> */}
+            </Dialog>
             <div className="storyContainer">
                 <div className="storyHeader">
                     <div className="search">
@@ -193,7 +193,10 @@ const Story = () => {
                         Add Story
                     </div>
                 </div>
-                <StoryAdd />
+                { showAdd && 
+                <StoryAdd 
+                    setShowAdd={setShowAdd}
+                />}
                 <div className="storyList">
                     <DataGrid
                         rows={listRow}

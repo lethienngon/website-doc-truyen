@@ -77,8 +77,31 @@ const findAll = (req, res) => {
     });
 };
 
+const deleteStory = (req, res) => {
+    Story.delete(req.params.storyID, (err, data) => {
+        if (err) {
+            if (err.kind === "not_found") {
+                res.status(404).send({
+                    state: "warning",
+                    message: `Not found Story with id ${req.params.storyID}!`
+                });
+            } else {
+                res.status(500).send({
+                    state: "error",
+                    message: "Could not delete Story with id " + req.params.storyID + "!!!"
+                });
+            }
+        } else
+            res.send({
+                state: "success",
+                message: `Story with id ${req.params.storyID} was deleted successfully`
+            });
+    });
+};
+
 module.exports = {
     uploadImage,
     addStory,
     findAll,
+    deleteStory,
 }

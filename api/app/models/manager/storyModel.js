@@ -132,4 +132,21 @@ Story.getAll = (name, result) => {
     });
 };
 
+Story.delete = (id, result) => {
+    db.query("DELETE FROM truyen WHERE truyen_id = ? ", id, (err, res) => {
+        if (err) {
+            console.log("Deleted error: ", err);
+            result(err, null);
+            return;
+        }
+        if (res.affectedRows == 0) {
+            console.log("Not found truyen with id: ", id);
+            result({ kind: "not_found" }, null);
+            return;
+        }
+        console.log("Deleted truyen with id: ", id);
+        result(null, res);
+    });
+};
+
 module.exports = Story;

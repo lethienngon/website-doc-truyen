@@ -5,6 +5,8 @@ const jwtController = require('../../controllers/jwtController');
 
 router.post('/add', jwtController.verifyTokenAndManagerAuth, storyController.uploadImage, storyController.addStory);
 
-router.get('/', storyController.findAll);
+router.get('/', jwtController.verifyTokenAndManagerAuth, storyController.findAll);
+
+router.delete('/delete/:storyID', storyController.deleteStory);
 
 module.exports = router;

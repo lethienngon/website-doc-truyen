@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { getAllStorys, deleteStory } from '../../../redux/apiRequest';
 
 import StoryAdd from "./StoryAdd";
+import StoryEdit from "./StoryEdit";
 import "./story.scss";
 
 const Story = () => {
@@ -25,9 +26,6 @@ const Story = () => {
     const [showAdd, setShowAdd] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
-
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
 
     const alert = useAlert();
 
@@ -86,17 +84,24 @@ const Story = () => {
             renderCell: (params) => {
                 let type = '';
                 let color = '';
-                if(params.row.truyen_status=='01'){
+                if(params.row.truyen_status=='10'){
                     type = 'Active';
                     color = 'green';
                 }
-                else if(params.row.truyen_status=='00'){
+                else if(params.row.truyen_status=='20'){
                     type = 'Clock';
                     color = 'crimson'
                 }
+                else if(params.row.truyen_status=='30'){
+                    type = 'Error';
+                    color = '#FF8C00'
+                }
                 else type = '???';
                 return (
-                    <span style={{  padding: '10px',
+                    <span style={{  padding: '6px',
+                                    width: '80px',
+                                    height: '30px',
+                                    textAlign: 'center',
                                     backgroundColor: color, 
                                     borderRadius: '30px'}}>
                         <p style={{ color: 'white'}}>{type}</p>
@@ -115,13 +120,12 @@ const Story = () => {
                     <div className="action">
                         <div
                             className="viewButton"
-                            // onClick={async (e) => {
-                            //     let temp = await getStoryByID(params.row.Story_id, user.accessToken, alert)
-                            //     setSeletedID(params.row.Story_id);
-                            //     setName(temp.Story_name);
-                            //     setDescription(temp.Story_description);
-                            //     setShowEdit(true);
-                            // }}
+                            onClick={async (e) => {
+                                // let temp = await getStoryByID(params.row.Story_id, user.accessToken, alert)
+                                setSeletedID(params.row.truyen_id);
+                                setShowEdit(true);
+                                setShowAdd(false);
+                            }}
                         >
                             Edit
                         </div>
@@ -188,6 +192,7 @@ const Story = () => {
                         onClick={(e) => {
                             setSearchInput("");
                             setShowAdd(!showAdd);
+                            setShowEdit(false);
                         }}
                     >
                         Add Story
@@ -196,6 +201,11 @@ const Story = () => {
                 { showAdd && 
                 <StoryAdd 
                     setShowAdd={setShowAdd}
+                />}
+                { showEdit && 
+                <StoryEdit 
+                    setShowEdit={setShowEdit}
+                    seletedID={seletedID}
                 />}
                 <div className="storyList">
                     <DataGrid

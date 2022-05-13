@@ -269,6 +269,19 @@ export const getAllStorys = async (searchInput, accessToken, alert) => {
     }
 }
 
+// Get Story by ID
+export const getStoryByID = async (selectedID, accessToken, alert) => {
+    try {
+        const response = await axiosJWT.get('http://localhost:3001/api/v1/manager/storys/'+selectedID,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        return response.data;
+    } catch (err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
 // Delete Story
 export const deleteStory = async(selectedID, accessToken, alert) => {
     try {

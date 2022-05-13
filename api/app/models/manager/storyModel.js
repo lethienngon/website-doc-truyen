@@ -58,7 +58,7 @@ Story.addAuthor = (truyen_id, authors, result) => {
 
 function getCategorys(truyen_id) {
     return new Promise(function(resolve, reject){
-        db.query(`SELECT c.category_name FROM category c join truyen_category tc 
+        db.query(`SELECT c.category_id, c.category_name FROM category c join truyen_category tc 
                 on c.category_id=tc.category_id WHERE tc.truyen_id=${truyen_id}`, function (err, res) {
                 if (err) {
                     console.log("List categorys error: ", err);
@@ -66,18 +66,23 @@ function getCategorys(truyen_id) {
                     return;
                 }
                 let listCategory = '';
+                const arrayCategory = [];
                 Object.keys(res).forEach(function (key) {
                     listCategory += res[key].category_name + ', ';
+                    arrayCategory.push(res[key].category_id)
                 });
                 listCategory = listCategory.slice(0, -2);
-                resolve(listCategory);
+                resolve({
+                    listCategory,
+                    arrayCategory: arrayCategory
+                });
             });
     })
 }
 
 function getAuthors(truyen_id) {
     return new Promise(function(resolve, reject){
-        db.query(`SELECT a.author_name FROM author a join truyen_author ta
+        db.query(`SELECT a.author_id, a.author_name FROM author a join truyen_author ta
                 on a.author_id=ta.author_id WHERE ta.truyen_id=${truyen_id}`, function (err, res) {
                 if (err) {
                     console.log("List authors error: ", err);
@@ -85,11 +90,16 @@ function getAuthors(truyen_id) {
                     return;
                 }
                 let listAuthor = '';
+                const arrayAuthor = [];
                 Object.keys(res).forEach(function (key) {
                     listAuthor += res[key].author_name + ', ';
+                    arrayAuthor.push(res[key].author_id)
                 });
                 listAuthor = listAuthor.slice(0, -2);
-                resolve(listAuthor);
+                resolve({
+                    listAuthor,
+                    arrayAuthor: arrayAuthor
+                });
             });
     })
 }
@@ -108,14 +118,14 @@ Story.getAll = (name, result) => {
             let authors = '';
             await getCategorys(story.truyen_id)
             .then(function(result){
-                categorys = result;
+                categorys = result.listCategory;
             })
             .catch(function(err){
                 console.log("Promise rejection error: "+err);
             })
             await getAuthors(story.truyen_id)
             .then(function(result){
-                authors = result;
+                authors = result.listAuthor;
             })
             .catch(function(err){
                 console.log("Promise rejection error: "+err);
@@ -131,6 +141,81 @@ Story.getAll = (name, result) => {
         result(null, data);
     });
 };
+
+Story.findId = (id, result) => {
+    db.query(`SELECT * FROM truyen WHERE truyen_id = ${id}`, async (err, res) => {
+        if (err) {
+            console.log("Find by ID error: ", err);
+            result(err, null);
+            return;
+        }
+        if (res.length) {
+            console.log("Found story: ", res[0]);
+            // result(null, res[0]);
+            const listCategory = res.map(async () => {
+                let categorys = [];
+                let authors = [];
+                await getCategorys(id)
+                .then(function(result){
+                    categorys = result.arrayCategory;
+                })
+                .catch(function(err){
+                    console.log("Promise rejection error: "+err);
+                })
+                await getAuthors(id)
+                .then(function(result){
+                    authors = result.arrayAuthor;
+                })
+                .catch(function(err){
+                    console.log("Promise rejection error: "+err);
+                })
+                return {
+                    ...res[0],
+                    arrayCategory: categorys,
+                    arrayAuthor: authors
+                }
+            })
+            const data = await Promise.all(listCategory);
+            console.log(data);
+            result(null, data);
+            return;
+        }
+        // not found story with the id
+        console.log("Not found story with id: ", id);
+        result({ kind: "not_found" }, null);
+    });
+};
+
+// Story.update = (id, story, result) => {
+//     let query = 'UPDATE story SET ';
+//     if(story.story_name) {
+//         query += `story_name = '${story.story_name}'`
+//     }
+//     if(story.story_description){
+//         if(story.story_name) {
+//             query += ', '
+//         }
+//         query += `story_description = '${story.story_description}'`
+//     }
+//     query += ` WHERE story_id = ${id}`
+//     db.query(query, (err, res) => {
+//             if (err) {
+//                 // err
+//                 console.log("Updated error: ", err);
+//                 result(err, null);
+//                 return;
+//             }
+//             if (res.affectedRows == 0) {
+//                 // not found story with the id
+//                 console.log("Not found story with id: ", id);
+//                 result({ kind: "not_found" }, null);
+//                 return;
+//             }
+//             console.log("Updated story: ", { id: id, ...story });
+//             result(null, { id: id, ...story });
+//         }
+//     );
+// };
 
 Story.delete = (id, result) => {
     db.query("DELETE FROM truyen WHERE truyen_id = ? ", id, (err, res) => {

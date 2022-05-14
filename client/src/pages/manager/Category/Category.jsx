@@ -10,6 +10,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { useSelector } from 'react-redux';
 import { addCategory, getAllCategorys, getCategoryByID, editCategory, deleteCategory } from '../../../redux/apiRequest';
@@ -24,6 +25,8 @@ const Category = () => {
     const [showAdd, setShowAdd] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
+    const [waitSubmit, setWaitSubmit] = useState(false);
+
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -99,10 +102,23 @@ const Category = () => {
                     />
                 </DialogContent>
                 <DialogActions>
+                    { waitSubmit && <CircularProgress className='waitSubmit'/>}
                     <Button onClick={(e)=> setShowAdd(false)}>Cancel</Button>
-                    <Button onClick={async (e)=> {
-                        await addCategory(name, description, user.accessToken, alert); 
-                        setShowAdd(false)}}>Save</Button>
+                    <Button onClick={async (e)=> {              
+                        try {
+                            setWaitSubmit(true);
+                            await addCategory(name, description, user.accessToken, alert);
+                        }catch{
+                            alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+                        }
+                        finally{
+                            setWaitSubmit(false);
+                            setShowAdd(false)
+                        }
+                    }}
+                    >
+                        Save
+                    </Button>
                 </DialogActions>
             </Dialog>
             <Dialog open={showEdit} onClose={(e)=> setShowEdit(false)}>
@@ -130,8 +146,20 @@ const Category = () => {
                 <DialogActions>
                     <Button onClick={(e)=> setShowEdit(false)}>Cancel</Button>
                     <Button onClick={async (e)=> {
-                        await editCategory(name, description, seletedID, user.accessToken, alert); 
-                        setShowEdit(false)}}>Save</Button>
+                        try {
+                            setWaitSubmit(true);
+                            await editCategory(name, description, seletedID, user.accessToken, alert); 
+                        } catch{
+                            alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+                        }
+                        finally{
+                            setWaitSubmit(false);
+                            setShowEdit(false)
+                        }
+                    }}
+                    >
+                        Save
+                    </Button>
                 </DialogActions>
             </Dialog>
             <Dialog open={showDelete} onClose={(e) => setShowDelete(false)}>
@@ -145,8 +173,16 @@ const Category = () => {
                     <Button
                         variant="contained"
                         onClick={async (e) => {
-                            await deleteCategory(seletedID, user.accessToken, alert); 
-                            setShowDelete(false);
+                            try {
+                                setWaitSubmit(true);
+                                await deleteCategory(seletedID, user.accessToken, alert); 
+                            } catch{
+                                alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+                            }
+                            finally{
+                                setWaitSubmit(false);
+                                setShowDelete(false)
+                            }
                         }}
                     >
                         YES

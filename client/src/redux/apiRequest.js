@@ -52,6 +52,10 @@ export const loginUser = async(user, dispatch, navigate, formik, alert) => {
             alert.error(<p style={{ color: 'crimson'}}>Incorrect username or password</p>);
             dispatch(loginFailed());
         }
+        else if(res.data.status == '20'){
+            alert.error(<p style={{ color: 'crimson'}}>User is locked</p>);
+            dispatch(loginFailed());
+        }
         else {
             alert.success(<p style={{ color: 'green'}}>Login successfully</p>);
             dispatch(loginSuccess(res.data));
@@ -90,6 +94,28 @@ export const getAllUsers = async (accessToken, dispatch, searchInput) => {
     }
 }
 
+// Edit Role or Status
+export const setStatusOrRole = async (roleBegin, status, role, selectedID, accessToken, alert) => {
+    try{
+        const res = await axiosJWT.patch('http://localhost:3001/api/v1/admin/users/statusorrole/'+selectedID,
+        {
+            status: status,
+            role: role
+        },
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        alert.success(<p style={{ color: 'green'}}>Set Status or Role successfully</p>);
+    }catch (err){
+        if(roleBegin=='00'){
+            alert.error(<p style={{ color: 'crimson'}}>Don't change with role Admin</p>);
+        }
+        else {
+            alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+        }
+    }
+}
+
 // Delete user
 export const deleteUser = async(accessToken, dispatch, alert, selectedID) => {
     dispatch(deleteUserStart());
@@ -103,7 +129,7 @@ export const deleteUser = async(accessToken, dispatch, alert, selectedID) => {
             dispatch(deleteUserSuccess());
         }
         else {
-            alert.error(<p style={{ color: 'crimson'}}>Not found user wit id {selectedID}</p>);
+            alert.error(<p style={{ color: 'crimson'}}>You can't delete this user</p>);
             dispatch(deleteUserFailed());
         }
     }

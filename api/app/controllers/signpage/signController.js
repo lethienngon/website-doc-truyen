@@ -105,7 +105,8 @@ const authLoginUser = (req, res) => {
                 sameSite: "strict", // Co tai lieu noi chrome phai dung 'none' thi moi dung duoc
             })
             res.status(200).json({ 
-                accessToken, 
+                accessToken,
+                status: data.user_status,
                 name: data.user_name,
                 image: data.user_image });
         };

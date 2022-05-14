@@ -8,10 +8,17 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import CircularProgress from '@mui/material/CircularProgress';
+
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getAllUsers, deleteUser } from '../../../redux/apiRequest';
+import { getAllUsers, deleteUser, setStatusOrRole } from '../../../redux/apiRequest';
 import { openDialogDelete, closeDialogDelete } from '../../../redux/userSlice';
 
 
@@ -21,6 +28,11 @@ const User = () => {
 
     const [searchInput, setSearchInput] = useState("");
     const [seletedID, setSeletedID] = useState(-1);
+    const [showEdit, setShowEdit] = useState('');
+    const [status, setStatus] = useState('');
+    const [role, setRole] = useState('');
+    const [roleBegin, setRoleBegin]= useState('');
+    const [waitSubmit, setWaitSubmit] = useState(false);
 
     // react-alert
     const alert = useAlert();
@@ -40,7 +52,7 @@ const User = () => {
         else {
             getAllUsers(user.accessToken, dispatch, searchInput);
         }
-    }, [searchInput, stateDialogDelete]);
+    }, [searchInput, stateDialogDelete, showEdit]);
 
 
     // Columns DataGrid
@@ -77,7 +89,7 @@ const User = () => {
                     color = 'green';
                 }
                 else if(params.row.user_status=='20'){
-                    type = 'Clock';
+                    type = 'Lock';
                     color = 'crimson'
                 }
                 else type = '???';
@@ -105,9 +117,13 @@ const User = () => {
                             className="viewButton"
                             onClick={(e) => {
                                 setSeletedID(params.row.user_id);
+                                setStatus(params.row.user_status);
+                                setRole(params.row.role_id);
+                                setRoleBegin(params.row.role_id);
+                                setShowEdit(true);
                             }}
                         >
-                            View
+                            Change
                         </div>
                         <div
                             className="deleteButton"
@@ -126,7 +142,7 @@ const User = () => {
 
     return (
         <>
-        <Dialog
+            <Dialog
                 open={stateDialogDelete}
                 keepMounted
                 onClose={(e) => dispatch(closeDialogDelete())}
@@ -150,6 +166,69 @@ const User = () => {
                         onClick={(e) => dispatch(closeDialogDelete())}
                     >
                         NO
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={showEdit} onClose={(e)=> setShowEdit(false)}>
+                <DialogTitle>CHANGE ROLE or STATUS</DialogTitle>
+                <DialogContent>
+                    <Box sx={{ minWidth: 200, margin: 5 }}>
+                        <FormControl fullWidth>
+                            <InputLabel id="statusUser">Status User</InputLabel>
+                            <Select
+                                labelId="statusUser"
+                                id="status"
+                                name="status"
+                                value={status}
+                                label="Status User"
+                                onChange={(e)=>setStatus(e.target.value)}
+                            >
+                                <MenuItem value={10}>Active</MenuItem>
+                                <MenuItem value={20}>Lock</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    <Box sx={{ minWidth: 200, margin: 5 }}>
+                        <FormControl fullWidth>
+                            <InputLabel id="roleUser">Role User</InputLabel>
+                            <Select
+                                labelId="roleUser"
+                                id="role"
+                                name="role"
+                                value={role}
+                                label="Role User"
+                                onChange={(e)=>setRole(e.target.value)}
+                            >
+                                {/* <MenuItem value='00'>Admin</MenuItem> */}
+                                <MenuItem value='01'>Manager</MenuItem>
+                                <MenuItem value='02'>Translator</MenuItem>
+                                <MenuItem value='03'>Member</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    { waitSubmit && <CircularProgress className='waitSubmit'/>}
+                    <Button onClick={(e)=> setShowEdit(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={async (e)=> {
+                        try {
+                            setWaitSubmit(true);
+                            await setStatusOrRole(roleBegin, status, role, seletedID, user.accessToken, alert); 
+                        } catch{
+                            if(roleBegin=='00'){
+                                alert.error(<p style={{ color: 'crimson'}}>Don't change with role Admin</p>);
+                            }
+                            else {
+                                alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+                            }
+                        }
+                        finally{
+                            setWaitSubmit(false);
+                            setShowEdit(false)
+                        }
+                    }}
+                    >
+                        Save
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -89,7 +89,7 @@ const Story = () => {
                     color = 'green';
                 }
                 else if(params.row.truyen_status=='20'){
-                    type = 'Clock';
+                    type = 'Lock';
                     color = 'crimson'
                 }
                 else if(params.row.truyen_status=='30'){

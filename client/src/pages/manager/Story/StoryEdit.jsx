@@ -202,7 +202,7 @@ const StoryEdit = ({setShowEdit, seletedID}) => {
                                     onChange={(e)=>formik.handleChange(e)}
                                 >
                                     <MenuItem value={10}>Active</MenuItem>
-                                    <MenuItem value={20}>Block</MenuItem>
+                                    <MenuItem value={20}>Lock</MenuItem>
                                     <MenuItem value={30}>Error</MenuItem>
                                 </Select>
                             </FormControl>

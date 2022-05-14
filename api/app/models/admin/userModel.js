@@ -7,9 +7,9 @@ const User = function(user) {
 };
 
 User.getAll = (name, result) => {
-    db.query(`SELECT u.user_id, u.user_name, u.user_image, u.user_email, u.user_status, r.role_name 
-                FROM user u join role_user ru on u.user_id=ru.user_id join role r on ru.role_id=r.role_id
-                WHERE u.user_name LIKE '%${name}%'`,
+    db.query(`SELECT u.user_id, u.user_name, u.user_image, u.user_email, u.user_status, r.role_name , r.role_id
+                FROM user u join role r on u.role_id=r.role_id
+                WHERE u.user_name LIKE '%${name}%' and r.role_id != '00'`,
         (err, res) => {
             // err syntax or ...
             if (err) {
@@ -23,21 +23,45 @@ User.getAll = (name, result) => {
         });
 };
 
+User.update = (id, status, role, result) => {
+    if(role=='00'){
+        result(err, null);
+        return;
+    }
+    let user = {
+        user_status: status,
+        role_id: role
+    }
+    db.query("UPDATE user SET ? WHERE user_id = ? and role_id != '00'", [user, id], 
+        (err, res) => {
+            if (err) {
+                console.log("Updated error: ", err);
+                result(err, null);
+                return;
+            }
+            if (res.affectedRows == 0) {
+                console.log("Not found user with id: ", id);
+                result({ kind: "not_found" }, null);
+                return;
+            }
+            console.log("Updated user: ", { id: id });
+            result(null, { id: id });
+        }
+    );
+};
+
 User.delete = (id, result) => {
-    db.query("DELETE FROM user WHERE user_id = ? ", id, (err, res) => {
+    db.query(`DELETE FROM user WHERE user_id = ${id} and role_id != '00'`, (err, res) => {
         if (err) {
-            // err syntax or ...
             console.log("Deleted error: ", err);
             result(err, null);
             return;
         }
         if (res.affectedRows == 0) {
-            // not found User with the id
             console.log("Not found user with id: ", id);
             result({ kind: "not_found" }, null);
             return;
         }
-        // delete success
         console.log("Deleted user with id: ", id);
         result(null, res);
     });

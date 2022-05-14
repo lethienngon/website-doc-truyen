@@ -25,6 +25,7 @@ const authSlice = createSlice({
         loginFailed: (state) => {
             state.login.isFetching = false;
             state.login.error = true;
+            state.login.currentUser = null;
         },
         setRole: (state, action) => {
             state.login.role = action.payload;

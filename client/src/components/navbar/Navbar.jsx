@@ -1,22 +1,28 @@
 import React from 'react';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
-import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+// import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+// import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+// import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
+// import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+// import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import {Avatar, Badge} from '@mui/material';
+
+import { useSelector } from 'react-redux';
+
 import "./navbar.scss";
 
 const Navbar = () => {
+
+    const user = useSelector(state => state.auth.login);
+
     return (
         <div className="navbar">
             <div className="wrapper">
-                <div className="search">
+                {/* <div className="search">
                     <input type="text" placeholder="Search..."/>
                     <SearchOutlinedIcon />
-                </div>
+                </div> */}
                 <div className="items">
-                    <div className="item">
+                    {/* <div className="item">
                         <DarkModeOutlinedIcon className="icon"/>
                     </div>
                     <div className="item">
@@ -32,10 +38,11 @@ const Navbar = () => {
                         <Badge color="info" badgeContent={10} max={9} className="badge">
                             <ChatBubbleOutlineOutlinedIcon className="icon" />
                         </Badge>
-                    </div>
+                    </div> */}
                     <div className="item">
-                        <Avatar alt="Avatar" src="" />
+                        <Avatar alt="Avatar" src={"http://localhost:3001/"+user.image} />
                     </div>
+                    <p>{user.name}</p>
                 </div>
             </div>
         </div>

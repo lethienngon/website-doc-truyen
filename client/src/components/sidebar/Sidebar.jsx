@@ -30,13 +30,13 @@ const Sidebar = (props) => {
             </div>
             <div className="center">
                 <ul>
-                    <p className="title">Main</p>
+                    {/* <p className="title">Main</p>
                     <li>
                         <Link to="">
                             <DashboardOutlinedIcon className="icon" />
                             <span>Dashboard</span>
                         </Link>
-                    </li>
+                    </li> */}
                     <p className="title">Role</p>
                     {props.roleList.map(role => (
                         <li key={role.id}>
@@ -67,10 +67,10 @@ const Sidebar = (props) => {
                     </li>
                 </ul>
             </div>
-            <div className="bottom">
+            {/* <div className="bottom">
                 <div className="colorOption"></div>
                 <div className="colorOption"></div>
-            </div>
+            </div> */}
         </div>
     );
 };

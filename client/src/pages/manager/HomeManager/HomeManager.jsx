@@ -3,7 +3,7 @@ import React from 'react';
 const HomeManager = () => {
     return (
         <div>
-            Dashboard
+            Hello
         </div>
     );
 };

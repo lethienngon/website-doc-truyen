@@ -7,6 +7,8 @@ const authSlice = createSlice({
             currentUser: null,
             role: null,
             id: null,
+            name: null,
+            image: null,
             isFetching: false,
             error: false,
         }
@@ -29,8 +31,13 @@ const authSlice = createSlice({
         },
         setId: (state, action) => {
             state.login.id = action.payload;
-        }
-        ,
+        },
+        setName: (state, action) => {
+            state.login.name = action.payload;
+        },
+        setImage: (state, action) => {
+            state.login.image = action.payload;
+        },
         logOutStart: (state) => {
             state.login.isFetching = true;
         },
@@ -53,6 +60,8 @@ export const {
     loginFailed,
     setRole,
     setId,
+    setName,
+    setImage,
     logOutStart,
     logOutSuccess,
     logOutFailed

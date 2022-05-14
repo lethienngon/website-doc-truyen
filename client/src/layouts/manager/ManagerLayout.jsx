@@ -7,8 +7,8 @@ import Navbar from "../../components/navbar/Navbar";
 
 // Role
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
-import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
-import SupervisedUserCircleOutlinedIcon from '@mui/icons-material/SupervisedUserCircleOutlined';
+// import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
+// import SupervisedUserCircleOutlinedIcon from '@mui/icons-material/SupervisedUserCircleOutlined';
 
 // Menu
 import BrushOutlinedIcon from '@mui/icons-material/BrushOutlined';
@@ -38,17 +38,23 @@ const ManagerLayout = () => {
                 logo="Manager"
                 roleList={[
                     {
-                        id: 3,
-                        icon: <AccountBoxOutlinedIcon className="icon" />,
-                        name: "Translator",
-                        link: "/translator"
+                        id: 1,
+                        icon: <AdminPanelSettingsOutlinedIcon className="icon" />,
+                        name: "Admin",
+                        link: "/admin"
                     },
-                    {
-                        id: 4,
-                        icon: <SupervisedUserCircleOutlinedIcon className="icon" />,
-                        name: "Member",
-                        link: "/member"
-                    }
+                    // {
+                    //     id: 3,
+                    //     icon: <AccountBoxOutlinedIcon className="icon" />,
+                    //     name: "Translator",
+                    //     link: "/translator"
+                    // },
+                    // {
+                    //     id: 4,
+                    //     icon: <SupervisedUserCircleOutlinedIcon className="icon" />,
+                    //     name: "Member",
+                    //     link: "/member"
+                    // }
                 ]}
 
                 menuList={[

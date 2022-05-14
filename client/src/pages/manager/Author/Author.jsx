@@ -1,15 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import Alert from "@mui/material/Alert";
-import Stack from "@mui/material/Stack";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Avatar, Button } from "@mui/material";
-import Axios from "axios";
+import { useAlert } from 'react-alert';
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import CircularProgress from '@mui/material/CircularProgress';
+
+import { getAllAuthors, deleteAuthor } from '../../../redux/apiRequest';
+import { useSelector } from 'react-redux';
 
 import AuthorAdd from "./AuthorAdd";
 import AuthorEdit from "./AuthorEdit";
@@ -17,21 +19,17 @@ import AuthorEdit from "./AuthorEdit";
 import "./author.scss";
 
 const Author = () => {
+
+    const user = useSelector(state => state.auth.login.currentUser);
+    const alert = useAlert();
+
+    const [waitSubmit, setWaitSubmit] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [listRow, setListRow] = useState([]);
     const [seletedID, setSeletedID] = useState(-1);
-    const [showAlert, setShowAlert] = useState(false);
-    const [resState, setResState] = useState("");
-    const [resMessage, setResMessage] = useState("");
-
-    // Add author
     const [showAdd, setShowAdd] = useState(false);
-
-    // // Delete author
-    const [openDialogDelete, setOpenDialogDelete] = useState(false);
-
-    // // Edit author
     const [showEdit, setShowEdit] = useState(false);
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
     // Columns DataGrid
     const columns = [
@@ -54,7 +52,7 @@ const Author = () => {
                 );
             },
         },
-        { field: "author_description", headerName: "Description", width: 550 },
+        { field: "author_description", headerName: "Description", width: 530 },
         {
             field: "action",
             headerName: "Action",
@@ -65,6 +63,7 @@ const Author = () => {
                         <div
                             className="viewButton"
                             onClick={(e) => {
+                                setShowEdit(false);
                                 setShowEdit(true);
                                 setShowAdd(false);
                                 setSeletedID(params.row.author_id);
@@ -88,37 +87,25 @@ const Author = () => {
     ];
 
     const handleDelete = async (authorID) => {
-        await Axios.delete(
-            `http://localhost:3001/api/v1/manager/authors/delete/${authorID}`
-        )
-            .then((res) => {
-                console.log(res);
-                setResState(res.data.state);
-                setResMessage(res.data.message);
-            })
-            .catch((err) => {
-                setResState("error");
-                setResMessage("Error delete author");
-            });
-        setOpenDialogDelete(false);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 2000);
-    };
-
-    const getAllAuthor = async () => {
         try {
-            const response = await Axios.get(
-                `http://localhost:3001/api/v1/manager/authors?name=${searchInput}`
-            );
-            setListRow(response.data);
-        } catch (error) {
-            console.log(error.message);
+            setWaitSubmit(true);
+            await deleteAuthor(seletedID, user.accessToken, alert);
+        } catch(err){
+            alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+        } finally{
+            setOpenDialogDelete(false);
+            setWaitSubmit(false);
         }
     };
 
-    useEffect(() => {
-        getAllAuthor();
-    }, [searchInput, resState, showAlert]);
+    useEffect( async () => {
+        try {
+            const response = await getAllAuthors(searchInput, user.accessToken, alert);
+            setListRow(response);
+        } catch(err){
+            alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+        }
+    }, [searchInput, openDialogDelete, showAdd, showEdit]);
 
     return (
         <>
@@ -135,6 +122,7 @@ const Author = () => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
+                    <span style={{maginLeft: '10px'}}>{ waitSubmit && <CircularProgress className='waitSubmit'/>}</span>
                     <Button
                         variant="contained"
                         onClick={(e) => handleDelete(seletedID)}
@@ -176,18 +164,10 @@ const Author = () => {
                         Add Author
                     </div>
                 </div>
-                <Stack sx={{ width: "100%" }} spacing={2}>
-                    {showAlert && (
-                        <Alert severity={resState}>{resMessage}</Alert>
-                    )}
-                </Stack>
                 {
                   showAdd &&
                   <AuthorAdd
                     setShowAdd={setShowAdd}
-                    setShowAlert={setShowAlert}
-                    setResState={setResState}
-                    setResMessage={setResMessage}
                     listRow={listRow}
                   />
                 }
@@ -195,9 +175,6 @@ const Author = () => {
                   showEdit && 
                   <AuthorEdit 
                     setShowEdit={setShowEdit}
-                    setShowAlert={setShowAlert}
-                    setResState={setResState}
-                    setResMessage={setResMessage}
                     listRow={listRow}
                     seletedID={seletedID}
                   />

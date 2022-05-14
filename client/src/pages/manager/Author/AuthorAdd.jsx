@@ -1,23 +1,28 @@
 import { useState, useEffect, useRef } from "react";
 import { TextField, Avatar, Button } from "@mui/material";
+import { useAlert } from 'react-alert';
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import HideImageIcon from "@mui/icons-material/HideImage";
-import Axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress';
+
+import { addAuthor } from '../../../redux/apiRequest';
+import { useSelector } from 'react-redux';
 
 const AuthorAdd = ({
     setShowAdd,
-    setShowAlert,
-    setResState,
-    setResMessage,
     listRow
 }) => {
+
+    const user = useSelector(state => state.auth.login.currentUser);
+    const alert = useAlert();
+
+    const [waitSubmit, setWaitSubmit] = useState(false);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [selectedImage, setSelectedImage] = useState("");
     const [alertName, setAlertName] = useState("");
     const [alertSelectedImage, setAlertSelectedImage] = useState("");
-    // we set it to true so that the form is disabled on first render
     const [disable, setDisabled] = useState(true);
 
     // we use the help of useRef to test if it's the first render
@@ -46,9 +51,6 @@ const AuthorAdd = ({
               setAlertName("");
               setAlertSelectedImage("The field avatar is required");
               return true;
-            } else if (author_name.find((lname) => lname === name)) {
-              setAlertName("Author is exist");
-              return true;
             } else {
               setAlertName("");
               setAlertSelectedImage("");
@@ -64,29 +66,26 @@ const AuthorAdd = ({
     };
 
     const handleSubmit = async () => {
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("description", description);
-        formData.append("image", selectedImage);
+        try {
+            setWaitSubmit(true);
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("description", description);
+            formData.append("image", selectedImage);
 
-        await Axios({
-            method: "post",
-            url: "http://localhost:3001/api/v1/manager/authors/add",
-            data: formData,
-            headers: { "Content-Type": "multipart/form-data" },
-        })
-            .then((res) => {
-                setResState(res.data.state);
-                setResMessage(res.data.message);
-            })
-            .catch(() => {
-                setResState("error");
-                setResMessage("Add author failed!!!");
-            });
-
-        setShowAdd(false);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 2000);
+            let status =  await addAuthor(formData, user.accessToken, alert);
+                if(status) {
+                    setSelectedImage('');
+                }
+        }
+        catch(err){
+            console.log(err);
+            alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+        }
+        finally{
+            setWaitSubmit(false);
+            setShowAdd(false);
+        }
     };
 
     return (
@@ -159,6 +158,7 @@ const AuthorAdd = ({
                     >
                         Reset
                     </Button>
+                    { waitSubmit && <CircularProgress className='waitSubmit'/>}
                 </div>
             </div>
         </div>

@@ -1,28 +1,31 @@
 import { useState, useEffect, useRef } from "react";
 import { TextField, Avatar, Button } from "@mui/material";
+import { useAlert } from 'react-alert';
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import HideImageIcon from "@mui/icons-material/HideImage";
-import Axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress';
+
+import { getAuthorByID, editAuthor } from '../../../redux/apiRequest';
+import { useSelector } from 'react-redux';
 
 const AuthorEdit = ({
     setShowEdit,
-    setShowAlert,
-    setResState,
-    setResMessage,
     listRow,
     seletedID,
 }) => {
 
+    const user = useSelector(state => state.auth.login.currentUser);
+    const alert = useAlert();
+
+    const [waitSubmit, setWaitSubmit] = useState(false);
     const [editDisable, setEditDisable] = useState(true);
     const [name, setName] = useState("");
-    const [checkName, setCheckName] = useState("");
     const [description, setDescription] = useState("");
     const [image, setImage] = useState("");
     const [selectedImage, setSelectedImage] = useState("");
     const [alertName, setAlertName] = useState("");
     const [alertSelectedImage, setAlertSelectedImage] = useState("");
-    // we set it to true so that the form is disabled on first render
     const [disable, setDisabled] = useState(true);
 
     // we use the help of useRef to test if it's the first render
@@ -44,10 +47,6 @@ const AuthorEdit = ({
                 return "The field name is required";
             }
             else {
-                if (author_name.find((lname) => lname == name) && (checkName != name) && (checkName != "")) {
-                    setDisabled(true);
-                    return "Author is exist";
-                }
                 setDisabled(false);
                 return "";
             }
@@ -75,55 +74,42 @@ const AuthorEdit = ({
     const imageChange = (e) => {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedImage(e.target.files[0]);
-            setImage("");
+            setImage('');
         }
     };
 
-    const getAuthorByID = async () => {
-        try {
-            const response = await Axios.get(
-                `http://localhost:3001/api/v1/manager/authors/${seletedID}`
-            );
-            setName(response.data.author_name);
-            setCheckName(response.data.author_name);
-            setDescription(response.data.author_description);
-            setImage(response.data.author_image);
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
-
-    useEffect(() => {
-        getAuthorByID();
+    useEffect( async () => {
+        const response = await getAuthorByID(seletedID, user.accessToken, alert)
+            setName(response.author_name);
+            setDescription(response.author_description);
+            setImage(response.author_image);
     }, [seletedID]);
 
     const handleSubmit = async () => {
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("description", description);
-        if(selectedImage){
-            formData.append("image", selectedImage);
+        try {
+            setWaitSubmit(true);
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("description", description);
+            if(!image) {
+                formData.append('image', selectedImage);
+            }else {
+                formData.append('image', null);
+            }
+
+            let status = await editAuthor(seletedID, formData, user.accessToken, alert);
+            if(status) {
+                setSelectedImage('');
+            }
         }
-
-        await Axios({
-            method: "put",
-            url: `http://localhost:3001/api/v1/manager/authors/edit/${seletedID}`,
-            data: formData,
-            headers: { "Content-Type": "multipart/form-data" },
-        })
-            .then((res) => {
-                setResState(res.data.state);
-                setResMessage(res.data.message);
-                console.log(res.data);
-            })
-            .catch(() => {
-                setResState("error");
-                setResMessage("Error update author");
-            });
-
-        setShowEdit(false);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 2000);
+        catch(err){
+            console.log(err);
+            alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+        }
+        finally{
+            setWaitSubmit(false);
+            setShowEdit(false);
+        }
     };
 
     return (
@@ -150,7 +136,7 @@ const AuthorEdit = ({
                         <Avatar
                             className="avatar"
                             alt="Avatar of Author"
-                            src={(selectedImage) ? URL.createObjectURL(selectedImage) : ("http://localhost:3001/"+image)}
+                            src={(image) ? "http://localhost:3001/"+image : URL.createObjectURL(selectedImage)}
                         />
                         <HideImageIcon
                             className="iconRemove"
@@ -213,6 +199,7 @@ const AuthorEdit = ({
                     >
                         Reset
                     </Button>
+                    { waitSubmit && <CircularProgress className='waitSubmit'/>}
                 </div>
             </div>
         </div>

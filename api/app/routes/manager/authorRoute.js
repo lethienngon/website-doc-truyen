@@ -1,22 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const authorController = require('../../controllers/manager/authorController');
+const jwtController = require('../../controllers/jwtController');
 
 // add one author
-router.post('/add', authorController.uploadImage, authorController.addAuthor);
+router.post('/add', jwtController.verifyTokenAndManagerAuth, authorController.uploadImage, authorController.addAuthor);
 
 // findAll or find by name
-router.get('/', authorController.findAll);
+router.get('/', jwtController.verifyTokenAndManagerAuth, authorController.findAll);
 
-router.get('/idname', authorController.findAllIdName);
+router.get('/idname', jwtController.verifyTokenAndManagerAuth, authorController.findAllIdName);
 
 // find a author by authorID
-router.get('/:authorID', authorController.findByAuthorID);
+router.get('/:authorID', jwtController.verifyTokenAndManagerAuth, authorController.findByAuthorID);
 
 // edit a author by authorID
-router.put('/edit/:authorID', authorController.uploadImage, authorController.updateAuthor);
+router.patch('/edit/:authorID', jwtController.verifyTokenAndManagerAuth, authorController.uploadImage, authorController.updateAuthor);
 
 // delete a author
-router.delete('/delete/:authorID', authorController.deleteAuthor);
+router.delete('/delete/:authorID', jwtController.verifyTokenAndManagerAuth, authorController.deleteAuthor);
 
 module.exports = router;

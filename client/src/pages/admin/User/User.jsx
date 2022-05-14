@@ -64,8 +64,35 @@ const User = () => {
                 );
             },
         },
-        { field: "user_email", headerName: "Email", width: 330 },
-        { field: "user_status", headerName: "Status", width: 100 },
+        { field: "user_email", headerName: "Email", width: 310 },
+        { 
+            field: "user_status", 
+            headerName: "Status", 
+            width: 100,
+            renderCell: (params) => {
+                let type = '';
+                let color = '';
+                if(params.row.user_status=='10'){
+                    type = 'Active';
+                    color = 'green';
+                }
+                else if(params.row.user_status=='20'){
+                    type = 'Clock';
+                    color = 'crimson'
+                }
+                else type = '???';
+                return (
+                    <span style={{  padding: '6px',
+                                    width: '80px',
+                                    height: '30px',
+                                    textAlign: 'center',
+                                    backgroundColor: color, 
+                                    borderRadius: '30px'}}>
+                        <p style={{ color: 'white'}}>{type}</p>
+                    </span>
+                )
+            },
+        },
         { field: "role_name", headerName: "Role", width: 100 },
         {
             field: "action",

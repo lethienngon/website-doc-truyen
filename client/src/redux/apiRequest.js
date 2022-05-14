@@ -223,6 +223,71 @@ export const deleteCategory = async(selectedID, accessToken, alert) => {
     }
 }
 
+// Add Author
+export const addAuthor= async (formData, accessToken, alert) => {
+    try{
+        await axiosJWT({
+                method: 'post',
+                url: 'http://localhost:3001/api/v1/manager/authors/add',
+                data: formData,
+                headers: { 
+                    'Content-Type': 'multipart/form-data',
+                    token: `Bearer ${accessToken}`
+                },
+            });
+            alert.success(<p style={{ color: 'green'}}>Add Author successfully</p>);
+            return true;
+    }catch (err){
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+        return false;
+    }
+}
+
+// Get all Authors
+export const getAllAuthors = async (searchInput, accessToken, alert) => {
+    try {
+        const response = await axiosJWT.get(`http://localhost:3001/api/v1/manager/authors?name=${searchInput}`,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        return response.data;
+    } catch (err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
+// Get Author by ID
+export const getAuthorByID = async (selectedID, accessToken, alert) => {
+    try{
+        const res = await axiosJWT.get('http://localhost:3001/api/v1/manager/authors/'+selectedID,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        return res.data;
+    }catch (err){
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
+// Edit Author
+export const editAuthor = async (selectedID, formData, accessToken, alert) => {
+    try{
+        await axiosJWT({
+            method: 'patch',
+            url: 'http://localhost:3001/api/v1/manager/authors/edit/'+selectedID,
+            data: formData,
+            headers: { 
+                'Content-Type': 'multipart/form-data',
+                token: `Bearer ${accessToken}`
+            },
+        });
+        alert.success(<p style={{ color: 'green'}}>Edit Author successfully</p>);
+        return true;
+    }catch (err){
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
 // Get all Id Name of Author
 export const getAllIdNameAuthors = async (accessToken, alert) => {
     try {
@@ -232,6 +297,25 @@ export const getAllIdNameAuthors = async (accessToken, alert) => {
         });
         return response.data;
     } catch (err) {
+        alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
+    }
+}
+
+// Delete Author
+export const deleteAuthor = async(selectedID, accessToken, alert) => {
+    try {
+        const res = await axiosJWT.delete(`http://localhost:3001/api/v1/manager/authors/delete/${selectedID}`,
+        {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        if(res.data.state=='success'){
+            alert.success(<p style={{ color: 'green'}}>Delete successfully</p>);
+        }
+        else {
+            alert.error(<p style={{ color: 'crimson'}}>Not found author with id {selectedID}</p>);
+        }
+    }
+    catch (err) {
         alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
     }
 }

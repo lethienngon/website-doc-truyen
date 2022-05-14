@@ -15,17 +15,7 @@ const storage = multer.diskStorage({
 // Upload Image
 const uploadImage = multer({
     storage: storage,
-    limits: { fileSize: '10000' },
-    fileFilter: (req, file, cb) => {
-        const fileTypes = /jpeg|jpg|png|gif/
-        const mimType = fileTypes.test(file.mimetype)
-        const extname = fileTypes.test(path.extname(file.originalname))
-
-        if (mimType && extname) {
-            return cb(null, true)
-        }
-        cb('Give proper files fomate to upload')
-    }
+    limits: { fileSize: '10000' }
 }).single('image');
 
 const addAuthor = (req, res) => {
@@ -93,13 +83,16 @@ const findByAuthorID = (req, res) => {
 }
 
 const updateAuthor = (req, res) => {
-
-    const authorupdate = new Author({
-        name: req.body.name,
-        description: req.body.description,
-        image: req.file.path,
-    });
-
+    let authorupdate = {
+        author_name: req.body.name,
+        author_description: req.body.description
+    };
+    if(req.file){
+        authorupdate = {
+            ...authorupdate,
+            author_image: req.file.path
+        }
+    }
     Author.update(req.params.authorID, authorupdate, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {

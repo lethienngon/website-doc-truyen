@@ -87,11 +87,11 @@ function Login(){
             </label>
             
             <button type="submit" onClick={formik.handleSubmit} className={selectorUser.login.isFetching ? "submit disabled" : "submit"}>Đăng nhập</button>
-            <p className="forgot-password">Quên mật khẩu?</p>
+            {/* <p className="forgot-password">Quên mật khẩu?</p>
             <div className="social-media">
                 <FacebookIcon className="icon"/>
                 <GoogleIcon className="icon"/>
-            </div>
+            </div> */}
         </div>
     );
 };

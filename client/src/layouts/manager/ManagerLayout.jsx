@@ -28,7 +28,7 @@ const ManagerLayout = () => {
     useEffect(() => {
         if(!user || !user?.accessToken || (role != 'Manager' && role != 'Admin')){
             if(role == 'Translator') navigate('/translator');
-            else navigate('/');
+            else navigate('/signpage');
         }
     }, []);
 

@@ -13,13 +13,14 @@ axios.defaults.withCredentials = true;
 
 
 // Call in axiosJWT
-const refreshTokenAPI = async () => {
+const refreshTokenAPI = async (dispatch) => {
     try {
         const res = await axios.post('http://localhost:3001/api/v1/signpage/refresh');
         return res.data;
     }
     catch(err) {
         console.log(err);
+        dispatch(loginFailed());
     }
 }
 // Refresh token when accessToken expires
@@ -28,13 +29,13 @@ axiosJWT.interceptors.request.use( async config => {
     const decodeToken = jwt_decode(user.accessToken);
     let date = new Date();
     if( decodeToken.exp < date.getTime()/1000){
-        const data = await refreshTokenAPI();
+        const data = await refreshTokenAPI(store.dispatch);
         const refreshUser = {
             ...user,
             accessToken: data.newAccessToken,
         }
-        config.headers["token"] = "Bearer " + data.newAccessToken;
         store.dispatch(loginSuccess(refreshUser));
+        config.headers["token"] = "Bearer " + data.newAccessToken;
     }
     return config;        
 },
@@ -192,11 +193,12 @@ export const getAllCategorys = async (searchInput, accessToken, alert) => {
 // Get all Id Name of Categorys
 export const getAllIdNameCategorys = async (accessToken, alert) => {
     try {
-        const response = await axiosJWT.get("http://localhost:3001/api/v1/manager/categorys/idname",
+        const response1 = await axiosJWT.get("http://localhost:3001/api/v1/manager/categorys/idname",
         {
             headers: { token: `Bearer ${accessToken}` },
         });
-        return response.data;
+        const response2 = await getAllIdNameAuthors(accessToken, alert);
+        return { categorys: response1.data, authors: response2};
     } catch (err) {
         alert.error(<p style={{ color: 'crimson'}}>Have some error...</p>);
     }
@@ -317,11 +319,12 @@ export const editAuthor = async (selectedID, formData, accessToken, alert) => {
 }
 
 // Get all Id Name of Author
-export const getAllIdNameAuthors = async (accessToken, alert) => {
+export const getAllIdNameAuthors = async (alert) => {
     try {
-        const response = await axiosJWT.get("http://localhost:3001/api/v1/manager/authors/idname",
+        const user = await store.getState().auth.login.currentUser;
+        const response = await axios.get("http://localhost:3001/api/v1/manager/authors/idname",
         {
-            headers: { token: `Bearer ${accessToken}` },
+            headers: { token: `Bearer ${user.accessToken}` },
         });
         return response.data;
     } catch (err) {

@@ -17,7 +17,7 @@ import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 
 import { useSelector } from 'react-redux';
-import { getAllIdNameCategorys, getAllIdNameAuthors, editStory, getStoryByID } from '../../../redux/apiRequest';
+import { getAllIdNameCategorys, editStory, getStoryByID } from '../../../redux/apiRequest';
 
 import "./story.scss";
 
@@ -49,9 +49,9 @@ const StoryEdit = ({setShowEdit, seletedID}) => {
 
     useEffect(async () => {
         let categoryTemp = await getAllIdNameCategorys(user.accessToken, alert);
-        setListCategory(categoryTemp);
-        let authorTemp = await getAllIdNameAuthors(user.accessToken, alert);
-        setListAuthor(authorTemp);
+        setListCategory(categoryTemp.categorys);
+        // let authorTemp = await getAllIdNameAuthors(user.accessToken, alert);
+        setListAuthor(categoryTemp.authors);
         storyByID = await getStoryByID(seletedID, user.accessToken, alert);
         formik.values.type = storyByID[0].truyen_type;
         formik.values.status = storyByID[0].truyen_status;

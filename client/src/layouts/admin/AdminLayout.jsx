@@ -29,7 +29,7 @@ const AdminLayout = () => {
         if(!user || !user?.accessToken || role != 'Admin'){
             if(role == 'Manager') navigate('/manager');
             else if(role == 'Translator') navigate('/translator');
-            else navigate('/');
+            else navigate('/signpage');
         }
     }, []);
 

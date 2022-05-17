@@ -45,10 +45,15 @@ const StoryAdd = ({setShowAdd}) => {
     const [waitSubmit, setWaitSubmit] = useState(false);
 
     useEffect(async () => {
-        const categoryTemp = await getAllIdNameCategorys(user.accessToken, alert);
-        setListCategory(categoryTemp);
-        const authorTemp = await getAllIdNameAuthors(user.accessToken, alert);
-        setListAuthor(authorTemp);
+        try {
+            // const categoryTemp = await getAllIdNameCategorys(user.accessToken, alert);
+            // setListCategory(categoryTemp);
+            // const authorTemp = await getAllIdNameAuthors(user.accessToken, alert);
+            // setListAuthor(authorTemp);
+        }
+        catch(err) {
+            console.log(err);
+        }
     },[])
 
     const handleChangeCategory = (e) => {

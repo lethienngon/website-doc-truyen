@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useAlert } from 'react-alert';
@@ -26,6 +26,7 @@ const Category = () => {
     const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [waitSubmit, setWaitSubmit] = useState(false);
+    const [alertName, setAlertName] = useState("");
 
 
     const [name, setName] = useState('');
@@ -39,6 +40,28 @@ const Category = () => {
         const temp = await getAllCategorys(searchInput, user.accessToken, alert);
         setListRow(temp);
     }, [searchInput, showAdd, showEdit, showDelete]);
+
+    const [disable, setDisabled] = useState(true);
+
+    // we use the help of useRef to test if it's the first render
+    const firstRender = useRef(true);
+
+    useEffect(() => {
+        // we want to skip validation on first render
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
+        setDisabled(() => {
+            if (name == "") {
+              setAlertName("The field name is required");
+              return true;
+            }else {
+              setAlertName("");
+              return false;
+            }
+          });
+    }, [name]);
 
     // Columns DataGrid
     const columns = [
@@ -93,6 +116,7 @@ const Category = () => {
                         variant="standard"
                         onChange={(e)=> setName(e.target.value)}
                     />
+                    <p style={{ color: 'crimson', padding: 5, fontSize: 12}}>{alertName}</p>
                     <TextareaAutosize
                         aria-label="empty textarea"
                         placeholder="Description"
@@ -104,7 +128,7 @@ const Category = () => {
                 <DialogActions>
                     { waitSubmit && <CircularProgress className='waitSubmit'/>}
                     <Button onClick={(e)=> setShowAdd(false)}>Cancel</Button>
-                    <Button onClick={async (e)=> {              
+                    <Button disabled={disable} variant="contained" onClick={async (e)=> {              
                         try {
                             setWaitSubmit(true);
                             await addCategory(name, description, user.accessToken, alert);
@@ -113,7 +137,9 @@ const Category = () => {
                         }
                         finally{
                             setWaitSubmit(false);
-                            setShowAdd(false)
+                            setShowAdd(false);
+                            setName("");
+                            setDescription("");
                         }
                     }}
                     >
@@ -122,7 +148,7 @@ const Category = () => {
                 </DialogActions>
             </Dialog>
             <Dialog open={showEdit} onClose={(e)=> setShowEdit(false)}>
-                <DialogTitle>EDIT CATEGORY</DialogTitle>
+                <DialogTitle>EDIT CATEGORY WITH ID: {seletedID}</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
@@ -134,6 +160,7 @@ const Category = () => {
                         variant="standard"
                         onChange={(e)=> setName(e.target.value)}
                     />
+                    <p style={{ color: 'crimson', padding: 5, fontSize: 12}}>{alertName}</p>
                     <TextareaAutosize
                         aria-label="empty textarea"
                         placeholder="Description"
@@ -145,7 +172,7 @@ const Category = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={(e)=> setShowEdit(false)}>Cancel</Button>
-                    <Button onClick={async (e)=> {
+                    <Button disabled={disable} variant="contained" onClick={async (e)=> {
                         try {
                             setWaitSubmit(true);
                             await editCategory(name, description, seletedID, user.accessToken, alert); 
@@ -154,7 +181,9 @@ const Category = () => {
                         }
                         finally{
                             setWaitSubmit(false);
-                            setShowEdit(false)
+                            setShowEdit(false);
+                            setName("");
+                            setDescription("");
                         }
                     }}
                     >
